@@ -1,0 +1,30 @@
+{
+    "name": "lilt",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start:dev": "nodemon",
+        "build": "rimraf ./build && tsc",
+        "start": "npm run build && node dist/entry.js",
+        "lint": "eslint . --ext .ts --fix"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@shopify/eslint-plugin": "^39.0.1",
+        "@types/cson": "0.0.31",
+        "@types/node": "^14.14.2",
+        "@typescript-eslint/eslint-plugin": "^4.5.0",
+        "@typescript-eslint/parser": "^4.5.0",
+        "eslint": "^7.11.0",
+        "nodemon": "^2.0.6",
+        "rimraf": "^3.0.2",
+        "ts-node": "^9.0.0",
+        "typescript": "^4.0.3"
+    },
+    "dependencies": {
+        "cson": "^7.20.0"
+    }
+}

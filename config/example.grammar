@@ -1,0 +1,22 @@
+_extends: "base.grammar"
+
+_includes: [
+	'animals.grammar'
+	'vehicles.grammar'
+]
+
+_variables: {
+	'mypet': '{animals}'
+}
+
+animals: [
+	'cat'
+	'dog'
+	'a {adjective} cat'
+	'a {adjective.cap} {animal}'
+	'a {adjective.times(3)} cat': 1,
+]
+
+story: [
+	'My {myanimal} went to the store and bought a {animal}'
+]
