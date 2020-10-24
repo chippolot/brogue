@@ -1,5 +1,5 @@
 _includes: [
-    "core.grammar"
+    "core/core.grammar"
 ]
 
 player_name: [
@@ -15,9 +15,9 @@ player_name_with_prefixes_and_suffixes: [
 
 player_name_inner: [
 	'{basic_player_name}',
-	{'{fun_player_name}': 0.3},
-	{'{fun_player_name_with_modifier}': 0.1},
-	{'{fun_player_name_with_nickname}': 0.1},
+	{'{fun_player_name}': 0.7},
+	{'{fun_player_name_with_modifier}': 0.2},
+	{'{fun_player_name_with_nickname}': 0.2},
 ]
 
 basic_player_name: [
@@ -26,10 +26,10 @@ basic_player_name: [
 ]
 
 fun_player_name: [
-	'{firstname} {player_name_thing}',
-	'{player_name_thing} {lastname}',
+	'{firstname} {thing}',
+	'{thing} {lastname}',
     {'{city} {lastname}': 0.3},
-	{'{player_name_thing}': 0.1},
+	{'{thing}': 0.1},
 ]
 
 fun_player_name_with_modifier: [
@@ -38,16 +38,15 @@ fun_player_name_with_modifier: [
 ]
 
 fun_player_name_with_nickname: [
-	'{player_name_thing} \'{player_name_thing.capitalizeall}\' {lastname}',
-	'{player_name_thing} \'The {player_name_thing.capitalizeall}\' {lastname}',
-	'{player_name_thing} \'The {city.capitalizeall} {verb.nounify.capitalizeall}\' {lastname}',
-	'{player_name_thing} \'{adjective.capitalizeall} {player_name_thing.capitalizeall}\' {lastname}',
-	{'{player_name_thing} \'{player_name_thing.capitalizeall.times(3)}\' {lastname}': 0.2},
+	'{thing_or_firstname} \'{thing.capitalizeall}\' {lastname}',
+	'{thing_or_firstname} \'The {thing.capitalizeall}\' {lastname}',
+	'{thing_or_firstname} \'The {city.capitalizeall} {verb.nounify.capitalizeall}\' {lastname}',
+	'{thing_or_firstname} \'The {thing.capitalizeall} From {city.capitalizeall}\' {lastname}',
+	'{thing_or_firstname} \'{adjective.capitalizeall} {thing.capitalizeall}\' {lastname}',
+	{'{thing_or_firstname} \'{thing.capitalizeall.times(3)}\' {lastname}': 0.2},
 ]
 
-player_name_thing: [
-	'{fruitveg}',
-	'{animal}',
-	'{flower}',
-	'{noun}',
+thing_or_firstname: [
+	'{thing}',
+	'{firstname}',
 ]

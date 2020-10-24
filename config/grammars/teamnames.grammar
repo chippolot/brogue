@@ -1,0 +1,10 @@
+team_name: [
+    '{team_name_inner.capitalizeall}'
+]
+
+team_name_inner: [
+    '{city} {thing.plural}',
+    {'{city} {thing.singular} {thing.plural}': 0.4},
+    {'{city} {verb.nounify.plural}': 0.4},
+    {'{city} {adjective} {verb.nounify.plural}': 0.3},
+]

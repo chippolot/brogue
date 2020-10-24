@@ -1,0 +1,8 @@
+thing: [
+	{'{fruitveg}': 2},
+	{'{animal}': 3},
+	{'{flower}': 0.5},
+	{'{noun}': 5},
+	{'{profession}': 1},
+	{'{bodypart}': 1.5}
+]

@@ -1,0 +1,6 @@
+_includes: [
+    'core/core.grammar',
+    'things.grammar',
+    'playernames.grammar',
+    'teamnames.grammar',
+]

@@ -3,6 +3,7 @@
 _includes: [
 	'adjectives.grammar',
 	'animals.grammar',
+	'bodyparts.grammar',
 	'cities.grammar',
 	'firstnames.grammar',
 	'flowers.grammar',
@@ -10,6 +11,7 @@ _includes: [
 	'lastnames.grammar',
 	'names.grammar',
 	'nouns.grammar',
+	'professions.grammar',
 	'verbs.grammar',
 ]
 
