@@ -3,9 +3,21 @@ _includes: [
 ]
 
 player_name: [
-	'{basic_player_name.capitalizeall}',
-	{'{fun_player_name.capitalizeall}': 0.3},
-	{'{fun_player_name_with_modifier.capitalizeall}': 0.1},
+    '{player_name_with_prefixes_and_suffixes.capitalizeall}'
+]
+
+player_name_with_prefixes_and_suffixes: [
+    '{player_name_inner}',
+    {'{name_prefix} {player_name_inner}': 0.1},
+    {'{player_name_inner} {name_suffix}': 0.1},
+    {'{name_prefix} {player_name_inner} {name_suffix}': 0.025},
+]
+
+player_name_inner: [
+	'{basic_player_name}',
+	{'{fun_player_name}': 0.3},
+	{'{fun_player_name_with_modifier}': 0.1},
+	{'{fun_player_name_with_nickname}': 0.1},
 ]
 
 basic_player_name: [
@@ -16,12 +28,21 @@ basic_player_name: [
 fun_player_name: [
 	'{firstname} {player_name_thing}',
 	'{player_name_thing} {lastname}',
+    {'{city} {lastname}': 0.3},
 	{'{player_name_thing}': 0.1},
 ]
 
 fun_player_name_with_modifier: [
 	'{adjective} {fun_player_name}',
 	'{verb.gerund} {fun_player_name}',
+]
+
+fun_player_name_with_nickname: [
+	'{player_name_thing} \'{player_name_thing.capitalizeall}\' {lastname}',
+	'{player_name_thing} \'The {player_name_thing.capitalizeall}\' {lastname}',
+	'{player_name_thing} \'The {city.capitalizeall} {verb.nounify.capitalizeall}\' {lastname}',
+	'{player_name_thing} \'{adjective.capitalizeall} {player_name_thing.capitalizeall}\' {lastname}',
+	{'{player_name_thing} \'{player_name_thing.capitalizeall.times(3)}\' {lastname}': 0.2},
 ]
 
 player_name_thing: [

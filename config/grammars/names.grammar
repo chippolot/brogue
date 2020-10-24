@@ -1,0 +1,30 @@
+_includes: [
+    'romannumerals.grammar'
+]
+
+name_prefix: [
+    'Dr.',
+    'King',
+    'Queen',
+    'Emporer',
+    'President',
+    'Governor',
+    'Rabbi',
+    'Father',
+    'Sister',
+    'Major',
+    'Prince',
+    'Princess',
+    'Brother',
+    'Mr.',
+    'Mrs.',
+]
+
+name_suffix: [
+    'Jr.',
+    'Sr.',
+    'Esq.',
+    'MD',
+    'PhD',
+    '{romannumeral}',
+]

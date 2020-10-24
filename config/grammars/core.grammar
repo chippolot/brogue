@@ -3,10 +3,12 @@
 _includes: [
 	'adjectives.grammar',
 	'animals.grammar',
+	'cities.grammar',
 	'firstnames.grammar',
 	'flowers.grammar',
 	'fruitveg.grammar',
 	'lastnames.grammar',
+	'names.grammar',
 	'nouns.grammar',
 	'verbs.grammar',
 ]

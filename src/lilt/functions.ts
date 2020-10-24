@@ -54,11 +54,22 @@ function _funcFutureTense(s: string) {
         .text();
 }
 
-function _funcGerundTense(s: string) {
+function _funcGerund(s: string) {
     return nlp(s).tag("#Verb").verbs()
         .toGerund()
         .text();
 }
+
+function _funcInfinitive(s: string) {
+    return nlp(s).tag("#Verb").verbs()
+        .toInfinitive()
+        .text();
+}
+
+function _funcNounify(s: string) {
+    const infinitive = _funcInfinitive(s);
+    return infinitive.slice(-1) === 'e' ? `${infinitive}r` : `${infinitive}er`;
+ }
 
 const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object.entries({
     capitalize: _funcCapitalize,
@@ -71,7 +82,9 @@ const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object
     past: _funcPastTense,
     present: _funcPresentTense,
     future: _funcFutureTense,
-    gerund: _funcGerundTense,
+    gerund: _funcGerund,
+    infinitive: _funcInfinitive,
+    nounify: _funcNounify
 }));
 
 function getBuiltInFunction(name: string) : Function | undefined {
