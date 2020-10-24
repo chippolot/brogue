@@ -24,6 +24,7 @@ function parseExansion(data: string): Expansion {
         if (callMatches.groups.args) {
             call.args = callMatches.groups.args.split(',');
         }
+        expansion.functionCalls.push(call);
     }
 
     return expansion;

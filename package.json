@@ -25,6 +25,10 @@
         "typescript": "^4.0.3"
     },
     "dependencies": {
-        "cson": "^7.20.0"
+        "@types/pluralize": "0.0.29",
+        "articles": "^0.2.2",
+        "cson": "^7.20.0",
+        "pluralize": "^8.0.0",
+        "tensify": "0.0.4"
     }
 }

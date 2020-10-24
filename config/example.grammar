@@ -15,9 +15,9 @@ adjective: [
 ]
 
 animals: [
-	'{animals}'
+	'cat'
 ]
 
 story: [
-	'My {mypet} went {mypet} to the store and bought a {animals}'
+	'My {mypet} went {mypet} to the store and bought {animals}'
 ]
