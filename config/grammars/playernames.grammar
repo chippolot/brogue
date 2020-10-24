@@ -1,0 +1,32 @@
+_includes: [
+    "core.grammar"
+]
+
+player_name: [
+	'{basic_player_name.capitalizeall}',
+	{'{fun_player_name.capitalizeall}': 0.3},
+	{'{fun_player_name_with_modifier.capitalizeall}': 0.1},
+]
+
+basic_player_name: [
+	{'{firstname} {lastname}': 0.7},
+	{'{firstname} {firstname}': 0.3},
+]
+
+fun_player_name: [
+	'{firstname} {player_name_thing}',
+	'{player_name_thing} {lastname}',
+	{'{player_name_thing}': 0.1},
+]
+
+fun_player_name_with_modifier: [
+	'{adjective} {fun_player_name}',
+	'{verb.gerund} {fun_player_name}',
+]
+
+player_name_thing: [
+	'{fruitveg}',
+	'{animal}',
+	'{flower}',
+	'{noun}',
+]

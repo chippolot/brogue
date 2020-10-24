@@ -1,4 +1,5 @@
 import nlp from 'compromise';
+
 const Articles = require('articles');
 
 function _funcCapitalize(s: string): string {
@@ -24,27 +25,39 @@ function _funcArtical(s: string) {
 }
 
 function _funcPluralize(s: string) {
-    return nlp(s).tag("#Noun").nouns().toPlural().text();
+    return nlp(s).tag("#Noun").nouns()
+        .toPlural()
+        .text();
 }
 
 function _funcSingularize(s: string) {
-    return nlp(s).tag("#Noun").nouns().toSingular().text();
+    return nlp(s).tag("#Noun").nouns()
+        .toSingular()
+        .text();
 }
 
 function _funcPastTense(s: string) {
-    return nlp(s).tag("#Verb").verbs().toPastTense().text();
+    return nlp(s).tag("#Verb").verbs()
+        .toPastTense()
+        .text();
 }
 
 function _funcPresentTense(s: string) {
-    return nlp(s).tag("#Verb").verbs().toPresentTense().text();
+    return nlp(s).tag("#Verb").verbs()
+        .toPresentTense()
+        .text();
 }
 
 function _funcFutureTense(s: string) {
-    return nlp(s).tag("#Verb").verbs().toFutureTense().text();
+    return nlp(s).tag("#Verb").verbs()
+        .toFutureTense()
+        .text();
 }
 
 function _funcGerundTense(s: string) {
-    return nlp(s).tag("#Verb").verbs().toGerund().text();
+    return nlp(s).tag("#Verb").verbs()
+        .toGerund()
+        .text();
 }
 
 const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object.entries({
@@ -57,7 +70,7 @@ const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object
     singular: _funcSingularize,
     past: _funcPastTense,
     present: _funcPresentTense,
-    future: _funcPresentTense,
+    future: _funcFutureTense,
     gerund: _funcGerundTense,
 }));
 
