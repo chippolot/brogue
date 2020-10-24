@@ -1,6 +1,9 @@
 import { Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule } from "./grammar";
 
+const MaxRecursionDepth: number = 20;
+
 class GenerationContext {
+    recursionDepth: number = 0;
     grammar: Grammar;
     variables: Map<string, string> = new Map<string, string>();
 
@@ -23,17 +26,18 @@ function pickLexeme(rule: Rule): Lexeme {
     throw new Error(`Failed to pick lexeme for rule ${rule.name}`);
 }
 
-function callExpansionFunction(call: ExpansionFunctionCall, str: string): string {
-    
+function callExpansionFunction(_: ExpansionFunctionCall, str: string): string {
+    // todo: implement me
+    return str;
 }
 
 function evaluateExpansion(expansion: Expansion, context: GenerationContext): string {
     // 1. Run expansion
-    let expandedString;
+    let expandedString: string;
     if (context.variables.has(expansion.name)) {
-        expandedString = context.variables.get(expansion.name);
+        expandedString = context.variables.get(expansion.name)!;
     } else if (context.grammar.rules.has(expansion.name)) {
-        const rule = context.grammar.rules.get(expansion.name);
+        const rule = context.grammar.rules.get(expansion.name)!;
         const lexeme = pickLexeme(rule);
         expandedString = expandLexeme(lexeme, context);
     } else {
@@ -41,13 +45,29 @@ function evaluateExpansion(expansion: Expansion, context: GenerationContext): st
     }
 
     // 2. Process functions
-    expandedString = expansion.functionCalls.reduce((str, call) => callExpansionFunction(call, str));
+    for (const call of expansion.functionCalls) {
+        expandedString = callExpansionFunction(call, expandedString);
+    }
 
     return expandedString;
 }
 
+function formatString(format: string, args: Array<string>): string {
+    return format.replace(/{(\d+)}/g, (match, number) => {
+        return typeof args[number] === 'undefined' ? match : args[number];
+    });
+}
+
 function expandLexeme(lexeme: Lexeme, context: GenerationContext): string {
+    if (context.recursionDepth > MaxRecursionDepth) {
+        throw new Error(`Failed to expand lexeme ${lexeme.originalString}. Stack overflow.`);
+    }
+
+    context.recursionDepth++;
     const expansions = lexeme.expansions.map((expansion) => evaluateExpansion(expansion, context));
+    context.recursionDepth--;
+    return formatString(lexeme.formatString, expansions);
+
 }
 
 function generate(grammar: Grammar, ruleName: string): string {
@@ -56,7 +76,7 @@ function generate(grammar: Grammar, ruleName: string): string {
 
     // 1. Expand variables
     grammar.variables.forEach((variable) => {
-        context.variables.set(variable.name, expandLexeme(variable.lexeme));
+        context.variables.set(variable.name, expandLexeme(variable.lexeme, context));
     });
 
     // 2. Pick lexeme

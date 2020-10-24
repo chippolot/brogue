@@ -9,8 +9,13 @@ class Expansion {
 }
 
 class Lexeme {
+    originalString: string;
     formatString: string = "";
     expansions: Array<Expansion> = [];
+
+    constructor(originalString: string) {
+        this.originalString = originalString;
+    }
 }
 
 class WeightedLexeme {

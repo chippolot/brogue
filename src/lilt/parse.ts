@@ -30,7 +30,7 @@ function parseExansion(data: string): Expansion {
 }
 
 function parseLexeme(data: string): Lexeme {
-    const lexeme = new Lexeme();
+    const lexeme = new Lexeme(data);
 
     let replacementCounter = 0;
     lexeme.formatString = data.replace(/{([^}]+)}/g, (_, innerMatch) => {
@@ -51,7 +51,7 @@ function parseRule(name: string, data: any): Rule {
 
     for (const lexemeElement of data) {
         let lexemeString: string;
-        let weight = 0.0;
+        let weight = 1.0;
 
         if (typeof lexemeElement === 'string') {
             lexemeString = lexemeElement;

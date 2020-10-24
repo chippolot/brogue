@@ -9,14 +9,15 @@ _variables: {
 	'mypet': '{animals}'
 }
 
+adjective: [
+	'slimy',
+	'fast'
+]
+
 animals: [
-	'cat'
-	'dog'
-	'a {adjective} cat'
-	'a {adjective.cap} {animal}'
-	'a {adjective.times(3)} cat': 1,
+	'{animals}'
 ]
 
 story: [
-	'My {myanimal} went to the store and bought a {animal}'
+	'My {mypet} went {mypet} to the store and bought a {animals}'
 ]
