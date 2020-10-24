@@ -1,0 +1,47 @@
+#_extends: "base.grammar"
+
+_includes: [
+	'adjectives.grammar',
+	'animals.grammar',
+	'firstnames.grammar',
+	'flowers.grammar',
+	'fruitveg.grammar',
+	'lastnames.grammar',
+	'nouns.grammar',
+	'verbs.grammar',
+]
+
+#_variables: { 'name': 'value' }
+
+test: [
+	'{verb.gerund}'
+]
+
+player_name: [
+	'{basic_player_name.capitalizeall}',
+	'{fun_player_name.capitalizeall}',
+	'{fun_player_name_with_modifier.capitalizeall}',
+]
+
+basic_player_name: [
+	'{firstname} {lastname}',
+	'{firstname} {firstname}',
+]
+
+fun_player_name: [
+	'{firstname} {player_name_thing}',
+	'{player_name_thing} {lastname}',
+	'{player_name_thing}'
+]
+
+fun_player_name_with_modifier: [
+	'{adjective} {fun_player_name}',
+	'{verb.gerund} {fun_player_name}'
+]
+
+player_name_thing: [
+	'{fruitveg}',
+	'{animal}',
+	'{flower}',
+	'{noun}',
+]

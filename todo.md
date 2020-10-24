@@ -1,7 +1,2 @@
-* {
-   rule: [lexeme, lexeme, lexeme] 
-}
-* {expansion.func(args,args,args).func}
-* {var= lexeme}
-* {*2}
----------------------------------------------------
+* Fix weightings
+* More name templates
