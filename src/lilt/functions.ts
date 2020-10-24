@@ -41,7 +41,7 @@ function _funcPastTense(s: string) {
 
 const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object.entries({
     capitalize: _funcCapitalize,
-    capitalizeAll: _funcCapitalizeAll,
+    capitalizeall: _funcCapitalizeAll,
     quotes: _funcQuotes,
     times: _funcTimes,
     artical: _funcArticalize,

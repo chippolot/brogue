@@ -3,6 +3,8 @@ import path from 'path';
 import {Lilt} from './lilt/lilt';
 
 const lilt = new Lilt();
-lilt.loadGrammar(path.resolve('config/example.grammar'));
-const story = lilt.generate('story');
-console.log(story);
+lilt.loadGrammar(path.resolve('config/core.grammar'));
+
+for (let i = 0; i < 100; ++i) {
+    console.log(lilt.generate('player_name'));
+}

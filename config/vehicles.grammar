@@ -1,5 +1,5 @@
-vehicles: [
-    'boat',
-    'car',
-    'bike'
+vehicle: [
+    'Boat',
+    'Car',
+    'Bike'
 ]
