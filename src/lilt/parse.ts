@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import CSON from 'cson';
-
 import { Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule, Variable, WeightedLexeme } from './grammar';
 
 function parseExansion(data: string): Expansion {
@@ -77,15 +75,24 @@ function _mergeGrammars(into: Grammar, other: Grammar): void {
     });
 }
 
-function parseGrammar(fileName: string): Grammar {
-    // 1. Open and parse file
+function readGrammarFile(fileName: string): string {
     let grammarString: string;
     try {
         grammarString = fs.readFileSync(fileName, 'utf8');
     } catch (error) {
         throw new Error(`Failed to load grammar file: ${fileName}`);
     }
-    const grammarObject = CSON.parse(grammarString);
+    return grammarString;
+}
+
+function parseGrammarString(text: string): any {
+    return JSON.parse(text);
+}
+
+function parseGrammarFile(fileName: string): Grammar {
+    // 1. Open and parse file
+    const grammarString = readGrammarFile(fileName);
+    const grammarObject = parseGrammarString(grammarString);
     const grammarDirName = path.dirname(fileName);
 
     let grammar: Grammar = { rules: new Map<string, Rule>(), variables: new Map<string, Variable>() };
@@ -94,7 +101,7 @@ function parseGrammar(fileName: string): Grammar {
     const baseFileName: string = grammarObject._extends;
     if (baseFileName) {
         const absoluteBaseFileName = path.resolve(grammarDirName, baseFileName);
-        grammar = parseGrammar(absoluteBaseFileName);
+        grammar = parseGrammarFile(absoluteBaseFileName);
     }
 
     // 3. Handle includes
@@ -102,7 +109,7 @@ function parseGrammar(fileName: string): Grammar {
     if (includeFileNames) {
         for (const includeFileName of includeFileNames) {
             const absoluteIncludeFileName = path.resolve(grammarDirName, includeFileName);
-            const includeGrammar = parseGrammar(absoluteIncludeFileName);
+            const includeGrammar = parseGrammarFile(absoluteIncludeFileName);
             _mergeGrammars(grammar, includeGrammar);
         }
     }
@@ -130,5 +137,7 @@ function parseGrammar(fileName: string): Grammar {
 }
 
 export {
-    parseGrammar,
+    parseGrammarFile,
+    readGrammarFile,
+    parseGrammarString,
 };

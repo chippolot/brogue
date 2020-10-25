@@ -1,9 +1,24 @@
-thing: [
-    { '{fruit}': 1.5 },
-    { '{vegetable}': 1.5 },
-    { '{animal}': 3 },
-    { '{flower}': 0.5 },
-    { '{noun}': 5 },
-    { '{profession}': 1 },
-    { '{body_part}': 1.5 }
-]
+{
+    "thing": [{
+            "{fruit}": 1.5
+        },
+        {
+            "{vegetable}": 1.5
+        },
+        {
+            "{animal}": 3
+        },
+        {
+            "{flower}": 0.5
+        },
+        {
+            "{noun}": 5
+        },
+        {
+            "{profession}": 1
+        },
+        {
+            "{body_part}": 1.5
+        }
+    ]
+}

@@ -1,10 +1,17 @@
-team_name: [
-    '{team_name_inner.capitalizeall}'
-]
-
-team_name_inner: [
-    '{us_city} {thing.plural}',
-    { '{us_city} {thing.singular} {thing.plural}': 0.4 },
-    { '{us_city} {verb.nounify.plural}': 0.4 },
-    { '{us_city} {adjective} {verb.nounify.plural}': 0.3 },
-]
+{
+    "team_name": [
+        "{team_name_inner.capitalizeall}"
+    ],
+    "team_name_inner": [
+        "{us_city} {thing.plural}",
+        {
+            "{us_city} {thing.singular} {thing.plural}": 0.4
+        },
+        {
+            "{us_city} {verb.nounify.plural}": 0.4
+        },
+        {
+            "{us_city} {adjective} {verb.nounify.plural}": 0.3
+        }
+    ]
+}

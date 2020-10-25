@@ -1,6 +1,8 @@
-_includes: [
-    '../../../lilt-core-grammars/grammars/core.grammar',
-    'things.grammar',
-    'playernames.grammar',
-    'teamnames.grammar',
-]
+{
+    "_includes": [
+        "../../../lilt-core-grammars/grammars/core.grammar",
+        "things.grammar",
+        "playernames.grammar",
+        "teamnames.grammar"
+    ]
+}
