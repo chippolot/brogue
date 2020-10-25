@@ -74,6 +74,8 @@ function parseRule(name: string, data: any): Rule {
 
 function parseGrammar(fileName: string): Grammar {
 
+    const t0 = new Date().getTime();
+
     // 1. Open and parse file
     let grammarString: string;
     try {
@@ -121,6 +123,9 @@ function parseGrammar(fileName: string): Grammar {
         const rule = parseRule(name, value);
         grammar.rules.set(rule.name, rule);
     }
+
+    const t1 = new Date().getTime();
+    console.log(`Parsing complete [${t1-t0} ms]: ${fileName}`);
 
     return grammar;
 }
