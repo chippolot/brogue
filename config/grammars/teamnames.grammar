@@ -3,8 +3,8 @@ team_name: [
 ]
 
 team_name_inner: [
-    '{city} {thing.plural}',
-    {'{city} {thing.singular} {thing.plural}': 0.4},
-    {'{city} {verb.nounify.plural}': 0.4},
-    {'{city} {adjective} {verb.nounify.plural}': 0.3},
+    '{us_city} {thing.plural}',
+    { '{us_city} {thing.singular} {thing.plural}': 0.4 },
+    { '{us_city} {verb.nounify.plural}': 0.4 },
+    { '{us_city} {adjective} {verb.nounify.plural}': 0.3 },
 ]

@@ -4,45 +4,45 @@ player_name: [
 
 player_name_with_prefixes_and_suffixes: [
     '{player_name_inner}',
-    {'{name_prefix} {player_name_inner}': 0.1},
-    {'{player_name_inner} {name_suffix}': 0.1},
-    {'{name_prefix} {player_name_inner} {name_suffix}': 0.025},
+    { '{name_prefix} {player_name_inner}': 0.1 },
+    { '{player_name_inner} {name_suffix}': 0.1 },
+    { '{name_prefix} {player_name_inner} {name_suffix}': 0.025 },
 ]
 
 player_name_inner: [
-	'{basic_player_name}',
-	{'{fun_player_name}': 0.7},
-	{'{fun_player_name_with_modifier}': 0.2},
-	{'{fun_player_name_with_nickname}': 0.2},
+    '{basic_player_name}',
+    { '{fun_player_name}': 0.7 },
+    { '{fun_player_name_with_modifier}': 0.2 },
+    { '{fun_player_name_with_nickname}': 0.2 },
 ]
 
 basic_player_name: [
-	{'{firstname} {lastname}': 0.7},
-	{'{firstname} {firstname}': 0.3},
+    { '{first_name} {last_name}': 0.7 },
+    { '{first_name} {first_name}': 0.3 },
 ]
 
 fun_player_name: [
-	'{firstname} {thing}',
-	'{thing} {lastname}',
-    {'{city} {lastname}': 0.3},
-	{'{thing}': 0.1},
+    '{first_name} {thing}',
+    '{thing} {last_name}',
+    { '{us_city} {last_name}': 0.3 },
+    { '{thing}': 0.1 },
 ]
 
 fun_player_name_with_modifier: [
-	'{adjective} {fun_player_name}',
-	'{verb.gerund} {fun_player_name}',
+    '{adjective} {fun_player_name}',
+    '{verb.gerund} {fun_player_name}',
 ]
 
 fun_player_name_with_nickname: [
-	'{thing_or_firstname} \'{thing.capitalizeall}\' {lastname}',
-	'{thing_or_firstname} \'The {thing.capitalizeall}\' {lastname}',
-	'{thing_or_firstname} \'The {city.capitalizeall} {verb.nounify.capitalizeall}\' {lastname}',
-	'{thing_or_firstname} \'The {thing.capitalizeall} From {city.capitalizeall}\' {lastname}',
-	'{thing_or_firstname} \'{adjective.capitalizeall} {thing.capitalizeall}\' {lastname}',
-	{'{thing_or_firstname} \'{thing.capitalizeall.times(3)}\' {lastname}': 0.2},
+    '{thing_or_firstname} \'{thing.capitalizeall}\' {last_name}',
+    '{thing_or_firstname} \'The {thing.capitalizeall}\' {last_name}',
+    '{thing_or_firstname} \'The {us_city.capitalizeall} {verb.nounify.capitalizeall}\' {last_name}',
+    '{thing_or_firstname} \'The {thing.capitalizeall} From {us_city.capitalizeall}\' {last_name}',
+    '{thing_or_firstname} \'{adjective.capitalizeall} {thing.capitalizeall}\' {last_name}',
+    { '{thing_or_firstname} \'{thing.capitalizeall.times(3)}\' {last_name}': 0.2 },
 ]
 
 thing_or_firstname: [
-	'{thing}',
-	'{firstname}',
+    '{thing}',
+    '{first_name}',
 ]
