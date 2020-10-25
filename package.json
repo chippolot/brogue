@@ -1,7 +1,7 @@
 {
     "name": "lilt",
-    "version": "1.0.0",
-    "description": "",
+    "version": "0.0.1",
+    "description": "A Grammar based generative text library based on Tracery.",
     "main": "index.js",
     "scripts": {
         "start:dev": "nodemon",
@@ -9,9 +9,8 @@
         "start": "npm run build && node dist/entry.js",
         "lint": "eslint . --ext .ts --fix"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "author": "Ben Smith",
+    "license": "MIT",
     "devDependencies": {
         "@shopify/eslint-plugin": "^39.0.1",
         "@types/cson": "0.0.31",
@@ -27,6 +26,7 @@
     "dependencies": {
         "articles": "^0.2.2",
         "compromise": "^13.6.0",
-        "cson": "^7.20.0"
+        "cson": "^7.20.0",
+        "lilt-core-grammars": "chippolot/lilt-core-grammars"
     }
 }

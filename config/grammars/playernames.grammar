@@ -1,7 +1,3 @@
-_includes: [
-    "core/core.grammar"
-]
-
 player_name: [
     '{player_name_with_prefixes_and_suffixes.capitalizeall}'
 ]

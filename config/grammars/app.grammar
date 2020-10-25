@@ -1,5 +1,5 @@
 _includes: [
-    'core/core.grammar',
+    '../../node_modules/lilt-core-grammars/grammars/core.grammar',
     'things.grammar',
     'playernames.grammar',
     'teamnames.grammar',
