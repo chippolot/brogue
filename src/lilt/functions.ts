@@ -1,4 +1,5 @@
 import nlp from 'compromise';
+
 const Articles = require('articles');
 
 function _isVowel(s: string): boolean {
@@ -91,11 +92,11 @@ function _funcNounify(s: string) {
     //  has 1 vowel
     //  and has a consonant that follows the vowel
 
-    if (_isConsonant(lastChar)
-        && lastChar !== 'x'
-        && vowelCount == 1
-        && _isVowel(infinitive.charAt(infinitive.length - 2))
-        && infinitive.length < 5) {
+    if (_isConsonant(lastChar) &&
+        lastChar !== 'x' &&
+        vowelCount === 1 &&
+        _isVowel(infinitive.charAt(infinitive.length - 2)) &&
+        infinitive.length < 5) {
         return `${infinitive.slice(0, -1) + lastChar + lastChar}er`;
     }
     return `${infinitive}er`;
@@ -117,7 +118,7 @@ const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object
     nounify: _funcNounify,
 }));
 
-function getBuiltInFunction(name: string) : Function | undefined {
+function getBuiltInFunction(name: string): Function | undefined {
     return builtInFunctions.get(name);
 }
 

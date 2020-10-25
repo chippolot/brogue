@@ -3,10 +3,10 @@ import path from 'path';
 
 import CSON from 'cson';
 
-import {Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule, Variable, WeightedLexeme} from './grammar';
+import { Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule, Variable, WeightedLexeme } from './grammar';
 
 function parseExansion(data: string): Expansion {
-    const expansion = new Expansion();
+    const expansion: Expansion = { name: "", functionCalls: [] };
 
     const tokens = data.split('.');
     expansion.name = tokens[0];
@@ -18,9 +18,7 @@ function parseExansion(data: string): Expansion {
             throw new Error(`Failed to parse expression function call: ${data}`);
         }
 
-        const call = new ExpansionFunctionCall();
-        call.name = callMatches.groups.func;
-
+        const call: ExpansionFunctionCall = { name: callMatches.groups.func, args: [] };
         if (callMatches.groups.args) {
             call.args = callMatches.groups.args.split(',');
         }
@@ -31,7 +29,7 @@ function parseExansion(data: string): Expansion {
 }
 
 function parseLexeme(data: string): Lexeme {
-    const lexeme = new Lexeme(data);
+    const lexeme: Lexeme = { originalString: data, formatString: "", expansions: [] };
 
     let replacementCounter = 0;
     lexeme.formatString = data.replace(/{([^}]+)}/g, (_, innerMatch) => {
@@ -47,9 +45,7 @@ function parseRule(name: string, data: any): Rule {
         throw new Error(`Expected value of rule ${name} to be array but was ${typeof data}`);
     }
 
-    const rule = new Rule();
-    rule.name = name;
-
+    const rule: Rule = { name, totalWeight: 0.0, weightedLexemes: [] };
     for (const lexemeElement of data) {
         let lexemeString: string;
         let weight = 1.0;
@@ -64,7 +60,7 @@ function parseRule(name: string, data: any): Rule {
         }
 
         const lexeme = parseLexeme(lexemeString);
-        const weightedLexeme = new WeightedLexeme(lexeme, weight);
+        const weightedLexeme: WeightedLexeme = { lexeme, weight };
         rule.weightedLexemes.push(weightedLexeme);
         rule.totalWeight += weightedLexeme.weight;
     }
@@ -72,10 +68,16 @@ function parseRule(name: string, data: any): Rule {
     return rule;
 }
 
+function _mergeGrammars(into: Grammar, other: Grammar): void {
+    other.rules.forEach((v, k) => {
+        into.rules.set(k, v);
+    });
+    other.variables.forEach((v, k) => {
+        into.variables.set(k, v);
+    });
+}
+
 function parseGrammar(fileName: string): Grammar {
-
-    const t0 = new Date().getTime();
-
     // 1. Open and parse file
     let grammarString: string;
     try {
@@ -86,7 +88,7 @@ function parseGrammar(fileName: string): Grammar {
     const grammarObject = CSON.parse(grammarString);
     const grammarDirName = path.dirname(fileName);
 
-    let grammar = new Grammar();
+    let grammar: Grammar = { rules: new Map<string, Rule>(), variables: new Map<string, Variable>() };
 
     // 2. Handle inheritance
     const baseFileName: string = grammarObject._extends;
@@ -101,7 +103,7 @@ function parseGrammar(fileName: string): Grammar {
         for (const includeFileName of includeFileNames) {
             const absoluteIncludeFileName = path.resolve(grammarDirName, includeFileName);
             const includeGrammar = parseGrammar(absoluteIncludeFileName);
-            grammar.merge(includeGrammar);
+            _mergeGrammars(grammar, includeGrammar);
         }
     }
 
@@ -109,7 +111,7 @@ function parseGrammar(fileName: string): Grammar {
     const variableStrings: Object = grammarObject._variables;
     if (variableStrings) {
         for (const [name, value] of Object.entries(variableStrings)) {
-            const variable = new Variable(name, parseLexeme(value));
+            const variable: Variable = { name, lexeme: parseLexeme(value) };
             grammar.variables.set(variable.name, variable);
         }
     }
@@ -123,9 +125,6 @@ function parseGrammar(fileName: string): Grammar {
         const rule = parseRule(name, value);
         grammar.rules.set(rule.name, rule);
     }
-
-    const t1 = new Date().getTime();
-    console.log(`Parsing complete [${t1-t0} ms]: ${fileName}`);
 
     return grammar;
 }

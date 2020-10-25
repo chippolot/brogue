@@ -21,6 +21,7 @@
         "no-console": 0,
         "indent": ["error", 4],
         "indent-legacy": 0,
-        "id-length": 0
+        "id-length": 0,
+        "babel/object-curly-spacing": 0,
     }, 
   }
