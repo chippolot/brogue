@@ -32,6 +32,7 @@ function callExpansionFunction(call: ExpansionFunctionCall, str: string): string
     if (func) {
         return func(str, ...call.args);
     }
+    console.log(`[Warning]: Unrecognized function ${call.name}`);
     return str;
 }
 

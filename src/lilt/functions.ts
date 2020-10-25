@@ -28,53 +28,71 @@ function _funcTimes(s: string, n: any) {
     return Array(Number(n)).fill(s).join(' ');
 }
 
-function _funcArtical(s: string) {
+function _funcArtical(s: string): string {
     return Articles.articlize(s);
 }
 
-function _funcPluralize(s: string) {
+function _funcPluralize(s: string): string {
     return nlp(s).tag("#Noun").nouns()
         .toPlural()
         .text();
 }
 
-function _funcSingularize(s: string) {
+function _funcSingularize(s: string): string {
     return nlp(s).tag("#Noun").nouns()
         .toSingular()
         .text();
 }
 
-function _funcPastTense(s: string) {
+function _funcPossessive(s: string): string {
+    return nlp(s).tag("#Noun").nouns()
+        .toPossessive()
+        .text();
+}
+
+function _funcPastTense(s: string): string {
     return nlp(s).tag("#Verb").verbs()
         .toPastTense()
         .text();
 }
 
-function _funcPresentTense(s: string) {
+function _funcPresentTense(s: string): string {
     return nlp(s).tag("#Verb").verbs()
         .toPresentTense()
         .text();
 }
 
-function _funcFutureTense(s: string) {
+function _funcFutureTense(s: string): string {
     return nlp(s).tag("#Verb").verbs()
         .toFutureTense()
         .text();
 }
 
-function _funcGerund(s: string) {
+function _funcGerund(s: string): string {
     return nlp(s).tag("#Verb").verbs()
         .toGerund()
         .text();
 }
 
-function _funcInfinitive(s: string) {
+function _funcInfinitive(s: string): string {
     return nlp(s).tag("#Verb").verbs()
         .toInfinitive()
         .text();
 }
 
-function _funcNounify(s: string) {
+function _funcPositive(s: string): string {
+    return nlp(s).tag("#Verb").verbs()
+        .toPositive()
+        .text();
+}
+
+function _funcNegative(s: string): string {
+    return nlp(s).tag("#Verb").verbs()
+        .toNegative()
+        .text();
+}
+
+function _funcNounify(s: string): string {
     const infinitive = _funcInfinitive(s);
     const lastChar = infinitive.charAt(infinitive.length - 1);
 
@@ -108,14 +126,17 @@ const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object
     quotes: _funcQuotes,
     times: _funcTimes,
     a: _funcArtical,
-    plural: _funcPluralize,
+    s: _funcPluralize,
     singular: _funcSingularize,
     past: _funcPastTense,
     present: _funcPresentTense,
     future: _funcFutureTense,
-    gerund: _funcGerund,
+    ing: _funcGerund,
     infinitive: _funcInfinitive,
     nounify: _funcNounify,
+    possessive: _funcPossessive,
+    positive: _funcPositive,
+    negative: _funcNegative,
 }));
 
 function getBuiltInFunction(name: string): Function | undefined {

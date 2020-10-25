@@ -1,8 +1,13 @@
 {
     "_includes": [
         "../../../lilt-core-grammars/grammars/core.grammar",
-        "things.grammar",
-        "playernames.grammar",
-        "teamnames.grammar"
+        "categories/body_things.grammar",
+        "categories/colors.grammar",
+        "categories/foods.grammar",
+        "categories/things.grammar",
+        "categories/locations.grammar",
+        "players/player_names.grammar",
+        "players/nicknames.grammar",
+        "teams/team_names.grammar"
     ]
 }

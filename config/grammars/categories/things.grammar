@@ -1,0 +1,33 @@
+{
+    "thing": [{
+            "{food}": 1
+        },
+        {
+            "{animal}": 31
+        },
+        {
+            "{flower}": 0.25
+        },
+        {
+            "{plant}": 0.25
+        },
+        {
+            "{noun}": 2
+        },
+        {
+            "{profession}": 0.5
+        },
+        {
+            "{body_thing}": 0.5
+        },
+        {
+            "{appliance}": 0.5
+        },
+        {
+            "{object}": 0.5
+        },
+        {
+            "{instrument}": 0.5
+        }
+    ]
+}

@@ -20,10 +20,10 @@
             "{fun_player_name}": 0.7
         },
         {
-            "{fun_player_name_with_modifier}": 0.2
+            "{fun_player_name_with_modifier}": 0.3
         },
         {
-            "{fun_player_name_with_nickname}": 0.2
+            "{thing_or_firstname} {nickname} {last_name}": 0.3
         }
     ],
     "basic_player_name": [{
@@ -45,17 +45,7 @@
     ],
     "fun_player_name_with_modifier": [
         "{adjective} {fun_player_name}",
-        "{verb.gerund} {fun_player_name}"
-    ],
-    "fun_player_name_with_nickname": [
-        "{thing_or_firstname} '{thing.capitalizeall}' {last_name}",
-        "{thing_or_firstname} 'The {thing.capitalizeall}' {last_name}",
-        "{thing_or_firstname} 'The {us_city.capitalizeall} {verb.nounify.capitalizeall}' {last_name}",
-        "{thing_or_firstname} 'The {thing.capitalizeall} From {us_city.capitalizeall}' {last_name}",
-        "{thing_or_firstname} '{adjective.capitalizeall} {thing.capitalizeall}' {last_name}",
-        {
-            "{thing_or_firstname} '{thing.capitalizeall.times(3)}' {last_name}": 0.2
-        }
+        "{verb.ing} {fun_player_name}"
     ],
     "thing_or_firstname": [
         "{thing}",
