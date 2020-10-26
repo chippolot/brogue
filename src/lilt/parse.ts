@@ -88,7 +88,11 @@ function readGrammarFile(fileName: string): string {
 }
 
 function parseGrammarString(text: string): any {
-    return JSON5.parse(text);
+    try {
+        return JSON5.parse(text);
+    } catch (e) {
+        throw new Error(`JSON5: Failed to parse text ${text}`);
+    }
 }
 
 function parseGrammarFile(fileName: string): Grammar {

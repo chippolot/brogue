@@ -27,6 +27,6 @@
         "articles": "^0.2.2",
         "compromise": "^13.6.0",
         "json5": "^2.1.3",
-        "lilt-core-grammars": "chippolot/lilt-core-grammars"
+        "lilt-core-grammars": "github:chippolot/lilt-core-grammars"
     }
 }

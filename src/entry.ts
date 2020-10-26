@@ -7,3 +7,4 @@ lilt.loadGrammar(path.resolve('config/grammars/app.grammar'));
 
 console.log('-----------------------------------');
 console.log(lilt.generate('roster'));
+console.log('-----------------------------------');
