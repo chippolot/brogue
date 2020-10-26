@@ -1,9 +1,10 @@
 import { getBuiltInFunction } from "./functions";
 import { Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule } from "./grammar";
+import { parseLexeme } from "./parse";
 
 const MaxRecursionDepth: number = 20;
 
-class GenerationContext {
+class ExpansionContext {
     recursionDepth: number = 0;
     grammar: Grammar;
     variables: Map<string, string> = new Map<string, string>();
@@ -27,7 +28,7 @@ function pickLexeme(rule: Rule): Lexeme {
     throw new Error(`Failed to pick lexeme for rule ${rule.name}`);
 }
 
-function callExpansionFunction(call: ExpansionFunctionCall, str: string, context: GenerationContext): string {
+function callExpansionFunction(call: ExpansionFunctionCall, str: string, context: ExpansionContext): string {
     const func = context.grammar.functions.get(call.name) ?? getBuiltInFunction(call.name);
     if (func) {
         return func(str, ...call.args);
@@ -36,7 +37,7 @@ function callExpansionFunction(call: ExpansionFunctionCall, str: string, context
     return str;
 }
 
-function evaluateExpansion(expansion: Expansion, context: GenerationContext): string {
+function evaluateExpansion(expansion: Expansion, context: ExpansionContext): string {
     // 1. Run expansion
     let expandedString: string;
     if (context.variables.has(expansion.name)) {
@@ -63,7 +64,7 @@ function formatString(format: string, args: Array<string>): string {
     });
 }
 
-function expandLexeme(lexeme: Lexeme, context: GenerationContext): string {
+function expandLexeme(lexeme: Lexeme, context: ExpansionContext): string {
     if (context.recursionDepth > MaxRecursionDepth) {
         throw new Error(`Failed to expand lexeme ${lexeme.originalString}. Stack overflow.`);
     }
@@ -75,26 +76,20 @@ function expandLexeme(lexeme: Lexeme, context: GenerationContext): string {
 
 }
 
-function generate(grammar: Grammar, ruleName: string): string {
+function expand(grammar: Grammar, text: string): string {
 
-    const context = new GenerationContext(grammar);
+    const context = new ExpansionContext(grammar);
+    const lexeme = parseLexeme(text);
 
-    // 1. Expand variables
+    // Expand variables
     grammar.variables.forEach((variable) => {
         context.variables.set(variable.name, expandLexeme(variable.lexeme, context));
     });
 
-    // 2. Pick lexeme
-    const rule = grammar.rules.get(ruleName);
-    if (!rule) {
-        throw new Error(`Grammer does not contain rule ${ruleName}`);
-    }
-    const lexeme = pickLexeme(rule);
-
-    // 3. Expand lexeme
+    // Expand lexeme
     return expandLexeme(lexeme, context);
 }
 
 export {
-    generate,
+    expand,
 };

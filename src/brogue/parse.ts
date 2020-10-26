@@ -153,4 +153,5 @@ export {
     parseGrammarFile,
     readGrammarFile,
     parseGrammarString,
+    parseLexeme,
 };

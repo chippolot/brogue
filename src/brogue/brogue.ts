@@ -1,5 +1,5 @@
 import { Grammar } from './grammar';
-import { generate } from './generate';
+import { expand } from './expand';
 import { parseGrammarFile } from './parse';
 
 class Brogue {
@@ -9,12 +9,12 @@ class Brogue {
         this.grammar = parseGrammarFile(grammarFileName);
     }
 
-    generate(startingRule: string): string {
+    expand(text: string): string {
         if (!this.grammar) {
             throw new Error('No grammar loaded. Call \'loadGrammar()\' before generating.');
         }
 
-        return generate(this.grammar, startingRule);
+        return expand(this.grammar, text);
     }
 }
 
