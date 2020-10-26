@@ -90,19 +90,8 @@ function readGrammarFile(fileName: string): string {
     return grammarString;
 }
 
-function parseGrammarString(text: string): any {
-    try {
-        return JSON5.parse(text);
-    } catch (e) {
-        throw new Error(`JSON5: Failed to parse text ${text}`);
-    }
-}
-
-function parseGrammarFile(fileName: string): Grammar {
-    // 1. Open and parse file
-    const grammarString = readGrammarFile(fileName);
-    const grammarObject = parseGrammarString(grammarString);
-    const grammarDirName = path.dirname(fileName);
+function parseGrammarObject(obj: any, basePath?: string): Grammar {
+    const grammarDirName = basePath ? path.dirname(basePath) : process.cwd();
 
     let grammar: Grammar = {
         rules: new Map<string, Rule>(),
@@ -111,14 +100,14 @@ function parseGrammarFile(fileName: string): Grammar {
     };
 
     // 2. Handle inheritance
-    const baseFileName: string = grammarObject._extends;
+    const baseFileName: string = obj._extends;
     if (baseFileName) {
         const absoluteBaseFileName = path.resolve(grammarDirName, baseFileName);
         grammar = parseGrammarFile(absoluteBaseFileName);
     }
 
     // 3. Handle includes
-    const includeFileNames: Array<string> = grammarObject._includes;
+    const includeFileNames: Array<string> = obj._includes;
     if (includeFileNames) {
         for (const includeFileName of includeFileNames) {
             const absoluteIncludeFileName = path.resolve(grammarDirName, includeFileName);
@@ -128,7 +117,7 @@ function parseGrammarFile(fileName: string): Grammar {
     }
 
     // 4. Parse variables
-    const variableStrings: Object = grammarObject._variables;
+    const variableStrings: Object = obj._variables;
     if (variableStrings) {
         for (const [name, value] of Object.entries(variableStrings)) {
             const variable: Variable = { name, lexeme: parseLexeme(value) };
@@ -137,7 +126,7 @@ function parseGrammarFile(fileName: string): Grammar {
     }
 
     // 5. Parse rules
-    for (const [name, value] of Object.entries(grammarObject)) {
+    for (const [name, value] of Object.entries(obj)) {
         // Ignore reserved id names
         if (name.startsWith('_')) {
             continue;
@@ -149,9 +138,24 @@ function parseGrammarFile(fileName: string): Grammar {
     return grammar;
 }
 
+function parseGrammarString(text: string, basePath?: string): Grammar {
+    let grammarObject;
+    try {
+        grammarObject = JSON5.parse(text);
+    } catch (e) {
+        throw new Error(`JSON5: Failed to parse text ${text}`);
+    }
+    return parseGrammarObject(grammarObject, basePath);
+}
+
+function parseGrammarFile(fileName: string): Grammar {
+    const grammarString = readGrammarFile(fileName);
+    return parseGrammarString(grammarString, fileName);
+}
+
 export {
     parseGrammarFile,
-    readGrammarFile,
     parseGrammarString,
+    parseGrammarObject,
     parseLexeme,
 };
