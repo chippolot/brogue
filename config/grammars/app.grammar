@@ -1,6 +1,6 @@
 {
   _includes: [
-    '../../node_modules/lilt-core-grammars/grammars/core.grammar',
+    '../../node_modules/brogue-core-grammars/grammars/core.grammar',
     'categories/body_things.grammar',
     'categories/colors.grammar',
     'categories/foods.grammar',

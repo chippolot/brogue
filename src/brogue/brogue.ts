@@ -2,7 +2,7 @@ import { Grammar } from './grammar';
 import { generate } from './generate';
 import { parseGrammarFile } from './parse';
 
-class Lilt {
+class Brogue {
     grammar?: Grammar;
 
     loadGrammar(grammarFileName: string): void {
@@ -20,5 +20,5 @@ class Lilt {
 
 
 export {
-    Lilt,
+    Brogue,
 };

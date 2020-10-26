@@ -1,10 +1,10 @@
 import path from 'path';
 
-import { Lilt } from './lilt/lilt';
+import { Brogue } from './brogue/brogue';
 
-const lilt = new Lilt();
-lilt.loadGrammar(path.resolve('config/grammars/app.grammar'));
+const brogue = new Brogue();
+brogue.loadGrammar(path.resolve('config/grammars/app.grammar'));
 
 console.log('-----------------------------------');
-console.log(lilt.generate('roster'));
+console.log(brogue.generate('roster'));
 console.log('-----------------------------------');
