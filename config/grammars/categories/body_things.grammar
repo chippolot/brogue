@@ -1,6 +1,1 @@
-{
-    "body_thing": [
-        "{body_part}",
-        { "{bodily_fluid}": 0.2 }
-    ]
-}
+{ body_thing: ['{body_part}', { '{bodily_fluid}': 0.2 }] }

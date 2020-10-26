@@ -1,23 +1,11 @@
 {
-    "team_name": [
-        "{team_name_inner.capitalizeall}"
-    ],
-    "team_name_inner": [
-        "{location} {thing.s}",
-        {
-            "{location} {thing.singular} {thing.s}": 0.4
-        },
-        {
-            "{location} {verb.nounify.s}": 0.4
-        },
-        {
-            "{location} {adjective} {verb.nounify.s}": 0.3
-        },
-        {
-            "{location} {animal.possessive} {body_thing.s}": 0.1
-        },
-        {
-            "{location} {animal.possessive} {clothing}": 0.1
-        }
-    ]
+  team_name: ['{team_name_inner.capitalizeall}'],
+  team_name_inner: [
+    '{location} {thing.s}',
+    { '{location} {thing.singular} {thing.s}': 0.4 },
+    { '{location} {verb.nounify.s}': 0.4 },
+    { '{location} {adjective} {verb.nounify.s}': 0.3 },
+    { '{location} {animal.possessive} {body_thing.s}': 0.1 },
+    { '{location} {animal.possessive} {clothing}': 0.1 }
+  ]
 }

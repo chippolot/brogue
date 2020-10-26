@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import JSON5 from 'json5';
+
 import { Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule, Variable, WeightedLexeme } from './grammar';
 
 function parseExansion(data: string): Expansion {
@@ -86,7 +88,7 @@ function readGrammarFile(fileName: string): string {
 }
 
 function parseGrammarString(text: string): any {
-    return JSON.parse(text);
+    return JSON5.parse(text);
 }
 
 function parseGrammarFile(fileName: string): Grammar {

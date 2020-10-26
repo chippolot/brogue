@@ -1,6 +1,1 @@
-{
-    "color": [
-        "{crayola_color}",
-        "{wiki_color}"
-    ]
-}
+{ color: ['{crayola_color}', '{wiki_color}'] }

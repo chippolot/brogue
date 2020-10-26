@@ -1,0 +1,25 @@
+{
+  roster: [
+    '\
+    {team_name}\n\
+    \n\
+    Lineup:\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+    \n\
+    Pitchers:\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\n\
+      * {player_name}\
+    '
+  ]
+}
