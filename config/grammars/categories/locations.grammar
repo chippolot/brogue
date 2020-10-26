@@ -1,1 +1,0 @@
-{ location: [{ '{us_city}': 1 }, { '{us_state}': 0.4 }, { '{country}': 0.2 }] }
