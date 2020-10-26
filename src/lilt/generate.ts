@@ -27,8 +27,8 @@ function pickLexeme(rule: Rule): Lexeme {
     throw new Error(`Failed to pick lexeme for rule ${rule.name}`);
 }
 
-function callExpansionFunction(call: ExpansionFunctionCall, str: string): string {
-    const func = getBuiltInFunction(call.name);
+function callExpansionFunction(call: ExpansionFunctionCall, str: string, context: GenerationContext): string {
+    const func = context.grammar.functions.get(call.name) ?? getBuiltInFunction(call.name);
     if (func) {
         return func(str, ...call.args);
     }
@@ -51,7 +51,7 @@ function evaluateExpansion(expansion: Expansion, context: GenerationContext): st
 
     // 2. Process functions
     for (const call of expansion.functionCalls) {
-        expandedString = callExpansionFunction(call, expandedString);
+        expandedString = callExpansionFunction(call, expandedString, context);
     }
 
     return expandedString;

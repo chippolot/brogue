@@ -33,6 +33,7 @@ interface Rule {
 interface Grammar {
     rules: Map<string, Rule>;
     variables: Map<string, Variable>;
+    functions: Map<string, Function>;
 }
 
 export {

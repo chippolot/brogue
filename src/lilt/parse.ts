@@ -75,6 +75,9 @@ function _mergeGrammars(into: Grammar, other: Grammar): void {
     other.variables.forEach((v, k) => {
         into.variables.set(k, v);
     });
+    other.functions.forEach((v, k) => {
+        into.functions.set(k, v);
+    });
 }
 
 function readGrammarFile(fileName: string): string {
@@ -101,7 +104,11 @@ function parseGrammarFile(fileName: string): Grammar {
     const grammarObject = parseGrammarString(grammarString);
     const grammarDirName = path.dirname(fileName);
 
-    let grammar: Grammar = { rules: new Map<string, Rule>(), variables: new Map<string, Variable>() };
+    let grammar: Grammar = {
+        rules: new Map<string, Rule>(),
+        variables: new Map<string, Variable>(),
+        functions: new Map<string, Function>(),
+    };
 
     // 2. Handle inheritance
     const baseFileName: string = grammarObject._extends;
