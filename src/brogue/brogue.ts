@@ -1,12 +1,13 @@
 import { Grammar } from './grammar';
 import { expand } from './expand';
-import { parseGrammarFile, parseGrammarObject, parseGrammarString } from './parse';
+import { parseGrammarFile, parseGrammarObject, parseGrammarString, postParseGrammar } from './parse';
 
 class Brogue {
     grammar?: Grammar;
 
     loadGrammar(grammarFileName: string): void {
         this.grammar = parseGrammarFile(grammarFileName);
+        postParseGrammar(this.grammar);
     }
 
     parseGrammar(grammar: any): void {
@@ -15,6 +16,7 @@ class Brogue {
         } else {
             this.grammar = parseGrammarObject(grammar);
         }
+        postParseGrammar(this.grammar);
     }
 
     registerModifier(name: string, modifier: Function): void {

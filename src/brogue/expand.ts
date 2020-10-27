@@ -1,5 +1,5 @@
 import { getBuiltInModifier } from "./modifiers";
-import { Expansion, ExpansionModifierCall, Grammar, Lexeme, Rule } from "./grammar";
+import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule } from "./grammar";
 import { parseLexeme } from "./parse";
 
 const MaxRecursionDepth: number = 20;
@@ -36,17 +36,39 @@ function callExpansionModifier(call: ExpansionModifierCall, str: string, context
     throw new Error(`Unrecognized function ${call.name}`);
 }
 
+function generateMarkovString(markovSymbol: MarkovSymbol): string {
+    const settings = markovSymbol.markov.settings;
+    for (let i = 0; i < settings.maxTries; ++i) {
+        const str = markovSymbol.markov.generate();
+        if (str === undefined) {
+            continue;
+        }
+        if (str.length < settings.minCharacters) {
+            continue;
+        }
+        return str;
+    }
+    console.log(`Failed to generate markov string for symbol ${markovSymbol.name} after ${settings.maxTries} tries`);
+    return "";
+}
+
 function evaluateExpansion(expansion: Expansion, context: ExpansionContext): string {
+    const grammar = context.grammar;
+    const expansionName = expansion.name;
+
     // 1. Run expansion
     let expandedString: string;
-    if (context.variables.has(expansion.name)) {
-        expandedString = context.variables.get(expansion.name)!;
-    } else if (context.grammar.rules.has(expansion.name)) {
-        const rule = context.grammar.rules.get(expansion.name)!;
+    if (context.variables.has(expansionName)) {
+        expandedString = context.variables.get(expansionName)!;
+    } else if (grammar.markovSymbols.has(expansionName)) {
+        const markovSymbol = grammar.markovSymbols.get(expansionName)!;
+        expandedString = generateMarkovString(markovSymbol);
+    } else if (grammar.rules.has(expansionName)) {
+        const rule = grammar.rules.get(expansionName)!;
         const lexeme = pickLexeme(rule);
         expandedString = expandLexeme(lexeme, context);
     } else {
-        throw new Error(`Expansion of ${expansion.name} failed -- Could not find associated variable or rule with same name.`);
+        throw new Error(`Expansion of ${expansionName} failed -- Could not find associated variable or rule or markov symbol with same name.`);
     }
 
     // 2. Process modifiers

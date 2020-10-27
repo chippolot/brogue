@@ -4,7 +4,12 @@
     "description": "A Grammar based generative text library based on Tracery.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "keywords": ["brogue", "generator", "grammars", "procgen"],
+    "keywords": [
+        "brogue",
+        "generator",
+        "grammars",
+        "procgen"
+    ],
     "scripts": {
         "build": "npm run lint && rimraf ./dist && tsc",
         "lint": "eslint . --ext .ts --fix"

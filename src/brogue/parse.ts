@@ -3,7 +3,9 @@ import path from 'path';
 
 import JSON5 from 'json5';
 
-import { Expansion, ExpansionModifierCall, Grammar, Lexeme, Rule, Variable, WeightedLexeme } from './grammar';
+import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule, Variable, WeightedLexeme } from './grammar';
+import { expand } from './expand';
+import { Markov } from './markov';
 
 function parseExansion(data: string): Expansion {
     const expansion: Expansion = { name: "", modifierCalls: [] };
@@ -77,6 +79,49 @@ function parseRule(name: string, data: any): Rule {
     return rule;
 }
 
+function trainMarkovSymbol(markovSymbol: MarkovSymbol, grammar: Grammar) {
+    // Expand sentences
+    const expandedStates = markovSymbol.markov.sentences.map((s) => expand(grammar, s));
+    markovSymbol.markov.setSentences(expandedStates);
+
+    markovSymbol.markov.train();
+}
+
+function parseMarkovSymbol(name: string, data: any): MarkovSymbol {
+    let sentences: string[];
+    const settings = Markov.DefaultSettings;
+
+    if (typeof data === 'string') {
+        sentences = [data];
+    } else if (Array.isArray(data)) {
+        sentences = data;
+    } else if (typeof data === 'object') {
+        if (typeof data.sentences === 'string') {
+            sentences = [data.sentences];
+        } else if (data) {
+            sentences = data.sentences;
+        } else {
+            throw new Error(`Failed to parse markov state data.`);
+        }
+        if (data.maxCharacters) {
+            settings.maxCharacters = data.maxCharacters;
+        }
+        if (data.minCharacters) {
+            settings.minCharacters = data.minCharacters;
+        }
+        if (data.maxTries) {
+            settings.maxTries = data.maxTries;
+        }
+        if (data.order) {
+            settings.order = data.order;
+        }
+    } else {
+        throw new Error(`Expected markov state to be string or object but found type: ${typeof data}`);
+    }
+
+    return { name, markov: new Markov(sentences, settings) };
+}
+
 function _mergeGrammars(into: Grammar, other: Grammar): void {
     other.rules.forEach((v, k) => {
         into.rules.set(k, v);
@@ -86,6 +131,9 @@ function _mergeGrammars(into: Grammar, other: Grammar): void {
     });
     other.modifiers.forEach((v, k) => {
         into.modifiers.set(k, v);
+    });
+    other.markovSymbols.forEach((v, k) => {
+        into.markovSymbols.set(k, v);
     });
 }
 
@@ -106,6 +154,7 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
         rules: new Map<string, Rule>(),
         variables: new Map<string, Variable>(),
         modifiers: new Map<string, Function>(),
+        markovSymbols: new Map<string, MarkovSymbol>(),
     };
 
     // Handle includes
@@ -124,6 +173,15 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
         for (const [name, value] of Object.entries(variableStrings)) {
             const variable: Variable = { name, lexeme: parseLexeme(value) };
             grammar.variables.set(variable.name, variable);
+        }
+    }
+
+    // Parse markov symbols
+    const markovSymbols: Object = obj._markovSymbols;
+    if (markovSymbols) {
+        for (const [name, value] of Object.entries(markovSymbols)) {
+            const markovSymbol = parseMarkovSymbol(name, value);
+            grammar.markovSymbols.set(markovSymbol.name, markovSymbol);
         }
     }
 
@@ -155,9 +213,16 @@ function parseGrammarFile(fileName: string): Grammar {
     return parseGrammarString(grammarString, fileName);
 }
 
+function postParseGrammar(grammar: Grammar): void {
+    grammar.markovSymbols.forEach((markovSymbol) => {
+        trainMarkovSymbol(markovSymbol, grammar);
+    });
+}
+
 export {
     parseGrammarFile,
     parseGrammarString,
     parseGrammarObject,
     parseLexeme,
+    postParseGrammar,
 };

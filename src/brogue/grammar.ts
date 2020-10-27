@@ -1,17 +1,19 @@
+import { Markov } from './markov';
+
 interface ExpansionModifierCall {
     name: string;
-    args: Array<string>;
+    args: string[];
 }
 
 interface Expansion {
     name: string;
-    modifierCalls: Array<ExpansionModifierCall>;
+    modifierCalls: ExpansionModifierCall[];
 }
 
 interface Lexeme {
     originalString: string;
     formatString: string;
-    expansions: Array<Expansion>;
+    expansions: Expansion[];
 }
 
 interface WeightedLexeme {
@@ -26,14 +28,20 @@ interface Variable {
 
 interface Rule {
     name: string;
-    weightedLexemes: Array<WeightedLexeme>;
+    weightedLexemes: WeightedLexeme[];
     totalWeight: number;
+}
+
+interface MarkovSymbol {
+    name: string;
+    markov: Markov;
 }
 
 interface Grammar {
     rules: Map<string, Rule>;
     variables: Map<string, Variable>;
     modifiers: Map<string, Function>;
+    markovSymbols: Map<string, MarkovSymbol>;
 }
 
 export {
@@ -44,4 +52,5 @@ export {
     ExpansionModifierCall,
     Lexeme,
     WeightedLexeme,
+    MarkovSymbol,
 };
