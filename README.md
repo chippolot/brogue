@@ -1,5 +1,5 @@
 # Brogue
-A Grammar based generative text library based on [Tracery](https://github.com/galaxykate/tracery).
+A Grammar based generative text library based on [@galaxykate's](https://github.com/galaxykate) [Tracery](https://github.com/galaxykate/tracery).
 
 ## Installation
 For use with Node.js, simply install using NPM:
@@ -8,25 +8,25 @@ npm install --save brogue
 ```
 
 ## Table of Contents
-- [Brogue](#brogue)
-  * [Installation](#installation)
-  * [Example Usage](#example-usage)
-  * [Usage](#usage)
-  * [Grammars](#grammars)
-    + [Grammar Syntax](#grammar-syntax)
-    + [Loading or Parsing Grammars](#loading-or-parsing-grammars)
-      - [Loading from files](#loading-from-files)
-      - [Parsing in code](#parsing-in-code)
-    + [Variables](#variables)
-    + [Modifiers](#modifiers)
-      - [Built-in Modifiers](#built-in-modifiers)
-    + [Core Grammars](#core-grammars)
-    + [Grammar Structure](#grammar-structure)
-  * [Advanced Topics](#advanced-topics)
-    + [Custom Modifiers](#custom-modifiers)
-    + [Rule Weighting](#rule-weighting)
+- [Usage](#usage)
+- [Grammars](#grammars)
+    * [Grammar Syntax](#grammar-syntax)
+    * [Loading or Parsing Grammars](#loading-or-parsing-grammars)
+        + [Loading from files](#loading-from-files)
+        + [Parsing in code](#parsing-in-code)
+    * [Variables](#variables)
+    * [Modifiers](#modifiers)
+        + [Built-in Modifiers](#built-in-modifiers)
+    * [Core Grammars](#core-grammars)
+    * [Grammar Structure](#grammar-structure)
+- [Advanced Topics](#advanced-topics)
+    * [Custom Modifiers](#custom-modifiers)
+    * [Rule Weighting](#rule-weighting)
 
-## Example Usage
+## Usage
+1. Load or Parse a grammar:  `brogue.loadGrammar(filePath)` or `brogue.parseGrammar(string)')`
+2. Expand some text:         `brogue.expand('{symbol}')`
+
 The code:
 ```
 const Brogue = require('brogue');
@@ -57,10 +57,6 @@ The dog got on his motorcycle and headed for space.
 The fish got on their bullet train and headed for the grocery store.
 The cat got on her ridable ostrich and headed for the finish line.
 ```
-
-## Usage
-1. Load or Parse a grammar:  `brogue.loadGrammar(filePath)` or `brogue.parseGrammar(string)')`
-2. Expand some text:         `brogue.expand('{symbol}')`
 
 ## Grammars
 A grammar is a set of rules used by the expander to generate text.
