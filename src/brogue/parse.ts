@@ -102,20 +102,13 @@ function readGrammarFile(fileName: string): string {
 function parseGrammarObject(obj: any, basePath?: string): Grammar {
     const grammarDirName = basePath ? path.dirname(basePath) : process.cwd();
 
-    let grammar: Grammar = {
+    const grammar: Grammar = {
         rules: new Map<string, Rule>(),
         variables: new Map<string, Variable>(),
         modifiers: new Map<string, Function>(),
     };
 
-    // 2. Handle inheritance
-    const baseFileName: string = obj._extends;
-    if (baseFileName) {
-        const absoluteBaseFileName = path.resolve(grammarDirName, baseFileName);
-        grammar = parseGrammarFile(absoluteBaseFileName);
-    }
-
-    // 3. Handle includes
+    // Handle includes
     const includeFileNames: Array<string> = obj._includes;
     if (includeFileNames) {
         for (const includeFileName of includeFileNames) {
@@ -125,7 +118,7 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
         }
     }
 
-    // 4. Parse variables
+    // Parse variables
     const variableStrings: Object = obj._variables;
     if (variableStrings) {
         for (const [name, value] of Object.entries(variableStrings)) {
@@ -134,7 +127,7 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
         }
     }
 
-    // 5. Parse rules
+    // Parse rules
     for (const [name, value] of Object.entries(obj)) {
         // Ignore reserved id names
         if (name.startsWith('_')) {

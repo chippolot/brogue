@@ -7,6 +7,25 @@ For use with Node.js, simply install using NPM:
 npm install --save brogue
 ```
 
+## Table of Contents
+- [Brogue](#brogue)
+  * [Installation](#installation)
+  * [Example Usage](#example-usage)
+  * [Usage](#usage)
+  * [Grammars](#grammars)
+    + [Grammar Syntax](#grammar-syntax)
+    + [Loading or Parsing Grammars](#loading-or-parsing-grammars)
+      - [Loading from files](#loading-from-files)
+      - [Parsing in code](#parsing-in-code)
+    + [Variables](#variables)
+    + [Modifiers](#modifiers)
+      - [Built-in Modifiers](#built-in-modifiers)
+    + [Core Grammars](#core-grammars)
+    + [Grammar Structure](#grammar-structure)
+  * [Advanced Topics](#advanced-topics)
+    + [Custom Modifiers](#custom-modifiers)
+    + [Rule Weighting](#rule-weighting)
+
 ## Example Usage
 The code:
 ```
@@ -79,7 +98,8 @@ Dolphin's Nose
 ```
 
 ### Grammar Syntax
-Grammars use the [JSON5](https://json5.org/) syntax. JSON5 is a superset of JSON so feel free to write standard JSON. However, JSON5 has some nice syntax changes which can help make your grammar files more human readable.
+Grammars use the [JSON5](https://json5.org/) syntax. JSON5 is a superset of JSON so feel free to write standard JSON. 
+However, JSON5 has some nice syntax changes (no requiement to quote keys, support for line breaks in strings, etc) which can help make your grammar files more human readable.
 
 Compare this (JSON5):
 ```
@@ -109,11 +129,11 @@ Grammars can be loaded into brogue in several different ways:
 
 #### Loading from files
 Grammars can be loaded from files using the `brogue.loadGrammar('path/to/file.grammar')` method.
-Loaded grammars can use the `_extends: 'base.grammar'` and `_includes: ['other.grammar', 'another.grammar']` key-value pairs to mix-in additional grammar files. File paths specified using these mix-in methods will be resolved relative to the initial file that is being parsed.
+Loaded grammars can use the `_includes: ['other.grammar', 'another.grammar']` key-value pairs to mix-in additional grammar files. File paths specified using these mix-in methods will be resolved relative to the initial file that is being parsed.
 
 #### Parsing in code
 Grammars can also be parsed from either JSON5 strings or Javascript objects using the `brogue.parseGrammar()` method.
-Grammars parsed this way can still use the `_extends` and `_includes` methods of mixing in additional files. These file paths will be resolved relative to the current working directory.
+Grammars parsed this way can still use the `_includes` feature to mix in additional files. These file paths will be resolved relative to the current working directory.
 
 ### Variables
 Grammar variables are special key-value pairs stored in the `_variables` key in a grammar.
@@ -170,12 +190,27 @@ Brogue uses both the [Articles](https://github.com/chadkirby/Articles) and [Comp
 | positive | `'didn't study' → 'studied'` |
 | negative | `'went' → 'did not go'` |
 
+### Core Grammars
+You can always create your own grammars to use with Brogue, but there is also a core set of existing grammars you can explore and import.
+The core grammar set can be found here: [Brogue Core Grammars](https://github.com/chippolot/brogue-core-grammars)
+
+To install the core grammars:
+```
+npm install --save brogue-core-grammars
+```
+
+To include the core grammars in your grammar:
+```
+{
+    _includes: [
+        '../../path_to_node_modules_folder/brogue-core-grammars/grammars/core.grammar',
+    ]
+}
+```
+
 ### Grammar Structure
 ```
 {
-    // Use an existing grammar file as a base
-    _extends: 'core.grammar',
-
     // Include additional grammar files
     _includes: [
     'animals.grammar'
@@ -219,14 +254,23 @@ brogue.registerModifier('reverse', (text) => {
 brogue.expand('{animal.reverse}');
 ```
 
+### Rule Weighting
+Each text string in a rule has an equal chance of being picked during expansion. However, you can also apply custom weights to text strings to have more control over the frequency in which they are chosen.
 
-## Todo
-* Rename functions -> modifiers
-* Core grammars
-* Fill out READMEs
-    * brogue
-        * [Tracery](https://github.com/galaxykate/tracery)
-        * json5
-    * brogue-core-grammars
-        * json5
-        * [Corpora](https://github.com/dariusk/corpora/tree/master/data)
+To weight a string, simply change it to a key-value pair in which the value is the random weight. Unless otherwise specified, all text strings have a weight of `1`.
+```
+{
+    animals: [
+        // This has a weight of 1
+        'cat',
+
+        // This has a weight of 2 -- it will be twice as likely to be picked
+        {'dog': 2},
+
+        // This has a weight of 0.5 -- it will be half as likely to be picked
+        {'fish': 0.5}
+    ]
+}
+```
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
