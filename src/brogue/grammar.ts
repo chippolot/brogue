@@ -1,11 +1,11 @@
-interface ExpansionFunctionCall {
+interface ExpansionModifierCall {
     name: string;
     args: Array<string>;
 }
 
 interface Expansion {
     name: string;
-    functionCalls: Array<ExpansionFunctionCall>;
+    modifierCalls: Array<ExpansionModifierCall>;
 }
 
 interface Lexeme {
@@ -33,7 +33,7 @@ interface Rule {
 interface Grammar {
     rules: Map<string, Rule>;
     variables: Map<string, Variable>;
-    functions: Map<string, Function>;
+    modifiers: Map<string, Function>;
 }
 
 export {
@@ -41,7 +41,7 @@ export {
     Rule,
     Variable,
     Expansion,
-    ExpansionFunctionCall,
+    ExpansionModifierCall,
     Lexeme,
     WeightedLexeme,
 };

@@ -3,10 +3,10 @@ import path from 'path';
 
 import JSON5 from 'json5';
 
-import { Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule, Variable, WeightedLexeme } from './grammar';
+import { Expansion, ExpansionModifierCall, Grammar, Lexeme, Rule, Variable, WeightedLexeme } from './grammar';
 
 function parseExansion(data: string): Expansion {
-    const expansion: Expansion = { name: "", functionCalls: [] };
+    const expansion: Expansion = { name: "", modifierCalls: [] };
 
     const tokens = data.split('.');
     expansion.name = tokens[0];
@@ -18,11 +18,11 @@ function parseExansion(data: string): Expansion {
             throw new Error(`Failed to parse expression function call: ${data}`);
         }
 
-        const call: ExpansionFunctionCall = { name: callMatches.groups.func, args: [] };
+        const call: ExpansionModifierCall = { name: callMatches.groups.func, args: [] };
         if (callMatches.groups.args) {
             call.args = callMatches.groups.args.split(',');
         }
-        expansion.functionCalls.push(call);
+        expansion.modifierCalls.push(call);
     }
 
     return expansion;
@@ -84,8 +84,8 @@ function _mergeGrammars(into: Grammar, other: Grammar): void {
     other.variables.forEach((v, k) => {
         into.variables.set(k, v);
     });
-    other.functions.forEach((v, k) => {
-        into.functions.set(k, v);
+    other.modifiers.forEach((v, k) => {
+        into.modifiers.set(k, v);
     });
 }
 
@@ -105,7 +105,7 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
     let grammar: Grammar = {
         rules: new Map<string, Rule>(),
         variables: new Map<string, Variable>(),
-        functions: new Map<string, Function>(),
+        modifiers: new Map<string, Function>(),
     };
 
     // 2. Handle inheritance

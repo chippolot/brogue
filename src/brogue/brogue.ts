@@ -17,12 +17,12 @@ class Brogue {
         }
     }
 
-    registerFunction(name: string, func: Function): void {
+    registerModifier(name: string, modifier: Function): void {
         if (!this.grammar) {
             throw new Error('No grammar loaded.');
         }
 
-        this.grammar.functions.set(name, func);
+        this.grammar.modifiers.set(name, modifier);
     }
 
     expand(text: string): string {

@@ -1,5 +1,5 @@
-import { getBuiltInFunction } from "./functions";
-import { Expansion, ExpansionFunctionCall, Grammar, Lexeme, Rule } from "./grammar";
+import { getBuiltInModifier } from "./modifiers";
+import { Expansion, ExpansionModifierCall, Grammar, Lexeme, Rule } from "./grammar";
 import { parseLexeme } from "./parse";
 
 const MaxRecursionDepth: number = 20;
@@ -28,8 +28,8 @@ function pickLexeme(rule: Rule): Lexeme {
     throw new Error(`Failed to pick lexeme for rule ${rule.name}`);
 }
 
-function callExpansionFunction(call: ExpansionFunctionCall, str: string, context: ExpansionContext): string {
-    const func = context.grammar.functions.get(call.name) ?? getBuiltInFunction(call.name);
+function callExpansionModifier(call: ExpansionModifierCall, str: string, context: ExpansionContext): string {
+    const func = context.grammar.modifiers.get(call.name) ?? getBuiltInModifier(call.name);
     if (func) {
         return func(str, ...call.args);
     }
@@ -49,9 +49,9 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext): str
         throw new Error(`Expansion of ${expansion.name} failed -- Could not find associated variable or rule with same name.`);
     }
 
-    // 2. Process functions
-    for (const call of expansion.functionCalls) {
-        expandedString = callExpansionFunction(call, expandedString, context);
+    // 2. Process modifiers
+    for (const call of expansion.modifierCalls) {
+        expandedString = callExpansionModifier(call, expandedString, context);
     }
 
     return expandedString;

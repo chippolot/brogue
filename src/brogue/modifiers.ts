@@ -1,6 +1,5 @@
 import nlp from 'compromise';
-
-const Articles = require('articles');
+import Articles from 'articles';
 
 function _isVowel(s: string): boolean {
     return s === 'a' || s === 'e' || s === 'i' || s === 'o' || s === 'u' || s === 'y' || s === 'A' || s === 'E' || s === 'I' || s === 'O' || s === 'U' || s === 'Y';
@@ -120,7 +119,7 @@ function _funcNounify(s: string): string {
     return `${infinitive}er`;
 }
 
-const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object.entries({
+const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object.entries({
     capitalize: _funcCapitalize,
     capitalizeall: _funcCapitalizeAll,
     quotes: _funcQuotes,
@@ -139,10 +138,10 @@ const builtInFunctions: Map<string, Function> = new Map<string, Function>(Object
     negative: _funcNegative,
 }));
 
-function getBuiltInFunction(name: string): Function | undefined {
-    return builtInFunctions.get(name);
+function getBuiltInModifier(name: string): Function | undefined {
+    return builtInModifiers.get(name);
 }
 
 export {
-    getBuiltInFunction,
+    getBuiltInModifier,
 };
