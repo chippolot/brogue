@@ -40,29 +40,38 @@ function parseLexeme(data: string): Lexeme {
     return lexeme;
 }
 
-function parseRule(name: string, data: any): Rule {
-    if (!Array.isArray(data)) {
-        throw new Error(`Expected value of rule ${name} to be array but was ${typeof data}`);
+function parseWeightedLexeme(data: any): WeightedLexeme {
+    let lexemeString: string;
+    let weight = 1.0;
+
+    if (typeof data === 'string') {
+        lexemeString = data;
+    } else if (typeof data === 'object') {
+        lexemeString = Object.keys(data)[0];
+        weight = data[lexemeString];
+    } else {
+        throw new Error(`Lexeme has unexpected type: ${typeof data}`);
     }
 
+    const lexeme = parseLexeme(lexemeString);
+    return { lexeme, weight };
+}
+
+function parseRule(name: string, data: any): Rule {
     const rule: Rule = { name, totalWeight: 0.0, weightedLexemes: [] };
-    for (const lexemeElement of data) {
-        let lexemeString: string;
-        let weight = 1.0;
 
-        if (typeof lexemeElement === 'string') {
-            lexemeString = lexemeElement;
-        } else if (typeof lexemeElement === 'object') {
-            lexemeString = Object.keys(lexemeElement)[0];
-            weight = lexemeElement[lexemeString];
-        } else {
-            throw new Error(`Lexeme has unexpected type: ${typeof lexemeElement}`);
+    if (Array.isArray(data)) {
+        for (const element of data) {
+            const weightedLexeme = parseWeightedLexeme(element);
+            rule.weightedLexemes.push(weightedLexeme);
+            rule.totalWeight += weightedLexeme.weight;
         }
-
-        const lexeme = parseLexeme(lexemeString);
-        const weightedLexeme: WeightedLexeme = { lexeme, weight };
+    } else if (typeof data === 'string' || typeof data === 'object') {
+        const weightedLexeme = parseWeightedLexeme(data);
         rule.weightedLexemes.push(weightedLexeme);
         rule.totalWeight += weightedLexeme.weight;
+    } else {
+        throw new Error(`Expected value of rule ${name} to be array or string or object but was ${typeof data}`);
     }
 
     return rule;
@@ -143,7 +152,7 @@ function parseGrammarString(text: string, basePath?: string): Grammar {
     try {
         grammarObject = JSON5.parse(text);
     } catch (e) {
-        throw new Error(`JSON5: Failed to parse text ${text}`);
+        throw new Error(`Failed to parse JSON5 text ${text.slice(0, 256)}... Internal error: ${e}`);
     }
     return parseGrammarObject(grammarObject, basePath);
 }
