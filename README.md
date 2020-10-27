@@ -40,12 +40,10 @@ The cat got on her ridable ostrich and headed for the finish line.
 ```
 
 ## Usage
-
-### Basic Usage
 1. Load or Parse a grammar:  `brogue.loadGrammar(filePath)` or `brogue.parseGrammar(string)')`
 2. Expand some text:         `brogue.expand('{symbol}')`
 
-### Grammars
+## Grammars
 A grammar is a set of rules used by the expander to generate text.
 
 Each rule is represented as a name followed by a list of text strings:
@@ -69,7 +67,7 @@ descriptive_animal: ['fun {animal}', 'cool {animal}'],
 animal: ['cat', 'dog', 'fish']
 ```
 
-You can chain together any number of modifiers after an expansion symbol to change the final output.
+You can chain together any number of modifiers after an expansion symbol to change the final output.  
 For example, expanding:
 ```
 animal_part: ['{animal.capitalize.possessive} {body_part.capitalize}']
@@ -137,6 +135,41 @@ Example:
 
 This example would use the same randomly chosen name everywhere the `{hero_name}` variable appears, but choose a new random artifact for each of the three `{artifact}` symbols.
 
+### Modifiers
+Expansion symbols can have any number of modifiers chained to them to affect the output.
+
+```
+{name.capitalize} ate all of {name.capitalize.possessive} {food.s}.
+```
+
+Might produce: 
+
+```
+Billy ate all of Trisha's tarts.
+```
+
+#### Built-in Modifiers
+Brogue uses both the [Articles](https://github.com/chadkirby/Articles) and [Compromise](https://github.com/spencermountain/compromise/) libraries to provide several built-in modifiers:
+
+| Name  | Description |
+| ------------- | ------------- |
+| capitalize  | `'a nice house' → 'A nice house'` |
+| capitalizeall  | `'a nice house' → 'A Nice House'` |
+| quotes | `'ham' → '"ham"'` |
+| times(number) | `'go.times(3)' → 'go go go'` |
+| a | `'cat' → 'a cat', 'ostrich' → 'an ostrict'` |
+| s | `'football captain' → 'football captains'` |
+| singular | `'turnovers' → 'turnover'` |
+| past | `'will go' → 'went'` |
+| present | `'walked' → 'walks'` |
+| future | `'walked' → 'will walk'` |
+| ing | `'help' → 'helping'` |
+| infinitive | `'walks' → 'walk'` |
+| nounify | `'swim' → 'swimmer'` |
+| possessive | `'Bill' → 'Bill's'` |
+| positive | `'didn't study' → 'studied'` |
+| negative | `'went' → 'did not go'` |
+
 ### Grammar Structure
 ```
 {
@@ -188,10 +221,7 @@ brogue.expand('{animal.reverse}');
 
 
 ## Todo
-* Loading grammars
-* List modifiers
-* JSON5
-* Variables
+* Rename functions -> modifiers
 * Core grammars
 * Fill out READMEs
     * brogue
