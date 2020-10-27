@@ -3,7 +3,9 @@ A Grammar based generative text library based on [Tracery](https://github.com/ga
 
 ## Installation
 For use with Node.js, simply install using NPM:
-`npm install --save brogue`
+```
+npm install --save brogue
+```
 
 ## Example Usage
 The code:
@@ -47,7 +49,9 @@ The cat got on her ridable ostrich and headed for the finish line.
 A grammar is a set of rules used by the expander to generate text.
 
 Each rule is represented as a name followed by a list of text strings:
-`rule_name: ['word1', 'word2', 'or a phrase']`
+```
+rule_name: ['word1', 'word2', 'or a phrase']
+```
 
 Rules can also contain expansion symbols. Expansion symbols are rule names wrapped in curly braces:
 ```
@@ -65,9 +69,16 @@ descriptive_animal: ['fun {animal}', 'cool {animal}'],
 animal: ['cat', 'dog', 'fish']
 ```
 
-You can chain together any number of modifiers after an expansion symbol to change the final output. 
-For example, expanding:     `animal_part: ['{animal.capitalize.possessive} {body_part.capitalize}']`
-Might produce:              `Dolphin's Nose`
+You can chain together any number of modifiers after an expansion symbol to change the final output.
+For example, expanding:
+```
+animal_part: ['{animal.capitalize.possessive} {body_part.capitalize}']
+```
+
+Might produce:
+```
+Dolphin's Nose
+```
 
 ### Grammar Syntax
 Grammars use the [JSON5](https://json5.org/) syntax. JSON5 is a superset of JSON so feel free to write standard JSON. However, JSON5 has some nice syntax changes which can help make your grammar files more human readable.
@@ -114,12 +125,14 @@ symbols which will result in a new random expansion each time they appear.
 
 Example:
 ```
-_variables: {
-    hero_name: '{name}'
-},
-name: ['Barbara', 'Gwendolyn', 'Sally'],
-artifact: ['Sacred Stone', 'Shiny Fork', 'Holy Donut'],
-story: '{hero_name} went questing one day. As {hero_name} opened the treasure chest, they found {artifact}, {artifact}, and {artifact}.'
+{
+    _variables: {
+        hero_name: '{name}'
+    },
+    name: ['Barbara', 'Gwendolyn', 'Sally'],
+    artifact: ['Sacred Stone', 'Shiny Fork', 'Holy Donut'],
+    story: '{hero_name} went questing one day. As {hero_name} opened the treasure chest, they found {artifact}, {artifact}, and {artifact}.'
+}
 ```
 
 This example would use the same randomly chosen name everywhere the `{hero_name}` variable appears, but choose a new random artifact for each of the three `{artifact}` symbols.
@@ -127,36 +140,36 @@ This example would use the same randomly chosen name everywhere the `{hero_name}
 ### Grammar Structure
 ```
 {
-  // Use an existing grammar file as a base
-  _extends: 'core.grammar',
+    // Use an existing grammar file as a base
+    _extends: 'core.grammar',
 
-  // Include additional grammar files
-  _includes: [
+    // Include additional grammar files
+    _includes: [
     'animals.grammar'
-  ],
-  
-  // Use variables to save text across all expansions
-  _variables: [
-      my_pet: '{animal.a}',
-      my_name: '{name}'
-  ],
+    ],
 
-  // All key-value pairs that do not start with an
-  // underscore are parsed as rules.
-  // Rules values can either be arrays of text or...
-  name: [
-      'bob',
-      'sally',
-      {'grant': 0.1}
-  ],
+    // Use variables to save text across all expansions
+    _variables: [
+        my_pet: '{animal.a}',
+        my_name: '{name}'
+    ],
 
-  // Rule values can be strings where there is only
-  // a single rule element.
-  animal: 'cat',
+    // All key-value pairs that do not start with an
+    // underscore are parsed as rules.
+    // Rules values can either be arrays of text or...
+    name: [
+        'bob',
+        'sally',
+        {'grant': 0.1}
+    ],
 
-  story: [
-      'My name is {my_name}. I went to the pet shop to buy {animal.a} but instead I got a {my_pet}.'
-  ]
+    // Rule values can be strings where there is only
+    // a single rule element.
+    animal: 'cat',
+
+    story: [
+        'My name is {my_name}. I went to the pet shop to buy {animal.a} but instead I got a {my_pet}.'
+    ]
 }
 ```
 
