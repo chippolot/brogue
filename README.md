@@ -196,7 +196,7 @@ To include the core grammars in your grammar:
 ```
 {
     _includes: [
-        '../../path_to_node_modules_folder/brogue-core-grammars/grammars/core.grammar',
+        'path_to_node_modules_folder/brogue-core-grammars/grammars/core.grammar',
     ]
 }
 ```
