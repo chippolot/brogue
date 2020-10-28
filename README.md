@@ -19,9 +19,6 @@ npm install --save brogue
 - [Advanced Topics](#advanced-topics)
     * [Custom Modifiers](#custom-modifiers)
     * [Rule Weighting](#rule-weighting)
-- [Advanced Topics](#advanced-topics)
-    * [Custom Modifiers](#custom-modifiers)
-    * [Rule Weighting](#rule-weighting)
     * [Markov Chains](#markov-chains)
 
 ## Usage
@@ -331,7 +328,7 @@ _markov: {
 ```
 
 | Setting  | Default | Description |
-| ------------- | ------------- |
+| ------------- | ------------- | ------------- |
 | minCharacters | 0 | Generation algorithm will retry generation if the resulting sentence has fewer characters than this value. |
 | maxCharacters | 100000 | Generation algorithm will retry generation if the resulting sentence has more characters than this value. |
 | maxTries | 100 | Number of times generation will be attempted before failing and returning an empty string. |
