@@ -333,5 +333,6 @@ _markov: {
 | maxCharacters | 100000 | Generation algorithm will retry generation if the resulting sentence has more characters than this value. |
 | maxTries | 100 | Number of times generation will be attempted before failing and returning an empty string. |
 | order | 2 | Determines how many previous words are used to pick the next word in the generated sentence. The larger the value, the more similar generated sentences will be to the input sentences to the point where they will eventually become identical. |
+| uniqueOutput | true | If true, generation will retry until the output string does not appear in the source list. |
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>

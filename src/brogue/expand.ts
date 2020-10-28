@@ -46,6 +46,9 @@ function generateMarkovString(markovSymbol: MarkovSymbol): string {
         if (str.length < settings.minCharacters) {
             continue;
         }
+        if (settings.uniqueOutput && markovSymbol.markov.sentences.includes(str)) {
+            continue;
+        }
         return str;
     }
     console.log(`Failed to generate markov string for symbol ${markovSymbol.name} after ${settings.maxTries} tries`);

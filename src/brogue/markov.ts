@@ -3,6 +3,7 @@ interface MarkovSettings {
     minCharacters: number;
     maxCharacters: number;
     maxTries: number;
+    uniqueOutput: boolean;
 }
 
 const END_SYMBOL = "_END_";
@@ -18,6 +19,7 @@ class Markov {
             maxCharacters: 100000,
             maxTries: 100,
             order: 2,
+            uniqueOutput: true,
         };
     }
 

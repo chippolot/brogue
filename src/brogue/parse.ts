@@ -121,6 +121,9 @@ function parseMarkovSymbol(name: string, data: any): MarkovSymbol {
         if (data.maxTries) {
             settings.maxTries = data.maxTries;
         }
+        if (data.uniqueOutput) {
+            settings.uniqueOutput = data.uniqueOutput;
+        }
         if (data.order) {
             settings.order = data.order;
         }
