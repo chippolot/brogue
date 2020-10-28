@@ -19,6 +19,10 @@ npm install --save brogue
 - [Advanced Topics](#advanced-topics)
     * [Custom Modifiers](#custom-modifiers)
     * [Rule Weighting](#rule-weighting)
+- [Advanced Topics](#advanced-topics)
+    * [Custom Modifiers](#custom-modifiers)
+    * [Rule Weighting](#rule-weighting)
+    * [Markov Chains](#markov-chains)
 
 ## Usage
 1. Load or Parse a grammar:  `brogue.loadGrammar(filePath)` or `brogue.parseGrammar(string)')`
@@ -307,7 +311,7 @@ To use markov chains in Brogue, simply add a `_markov` section in a grammar. Eac
 }
 ```
 
-#### Settings
+#### Markov Settings
 Markov chain entries support additional settings which control the markov chain generation process.  
 To specify settings, simply add them to your `_markov` entries like so:
 ```
