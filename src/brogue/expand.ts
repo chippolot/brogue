@@ -49,7 +49,7 @@ function generateMarkovString(markovSymbol: MarkovSymbol): string {
         return str;
     }
     console.log(`Failed to generate markov string for symbol ${markovSymbol.name} after ${settings.maxTries} tries`);
-    return "";
+    return '';
 }
 
 function evaluateExpansion(expansion: Expansion, context: ExpansionContext): string {

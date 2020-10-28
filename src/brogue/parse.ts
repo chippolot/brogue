@@ -177,7 +177,7 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
     }
 
     // Parse markov symbols
-    const markovSymbols: Object = obj._markovSymbols;
+    const markovSymbols: Object = obj._markov;
     if (markovSymbols) {
         for (const [name, value] of Object.entries(markovSymbols)) {
             const markovSymbol = parseMarkovSymbol(name, value);

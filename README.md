@@ -215,6 +215,10 @@ To include the core grammars in your grammar:
         my_name: '{name}'
     ],
 
+    _markov: {
+        random_phrase: [ 'never say never', 'never say anything', 'always say something', 'always take a vacation' ]
+    },
+
     // All key-value pairs that do not start with an
     // underscore are parsed as rules.
     // Rules values can either be arrays of text or...
@@ -265,5 +269,68 @@ To weight a string, simply change it to a key-value pair in which the value is t
     ]
 }
 ```
+
+### Markov Chains
+Brogue supports markov chain generation via the `_markov` key in grammar objects. 
+
+Markov chains can be used to generate new sequences (in this case, sentences) based on analyzing some input data and determining the probabilities of elements appearing after other elements. 
+
+For example, given some input data:
+```
+A cat likes rice.
+A dog likes pies.
+A dog likes cheese.
+```
+
+A markov chain may generate:
+```
+A cat likes rice.
+A cat likes cheese.
+A cat likes pies.
+A dog likes rice.
+A dog likes cheese.
+A dog likes pies.
+```
+
+To use markov chains in Brogue, simply add a `_markov` section in a grammar. Each entry in the `_markov` section will register a new expansion symbol which, when expanded, will generate a new sentence using markov chains.
+
+```
+{
+    _markov: {
+        animals_like_food: [
+            'A cat likes rice',
+            'A dog likes pies',
+            'A dog likes cheese'
+        ],
+        story: '{animals_like_food} and I do too!'
+    }
+}
+```
+
+#### Settings
+Markov chain entries support additional settings which control the markov chain generation process.  
+To specify settings, simply add them to your `_markov` entries like so:
+```
+_markov: {
+    animals_like_food: {
+        sentences: [
+            'A cat likes rice',
+            'A dog likes pies',
+            'A dog likes cheese'
+        ], 
+        minCharacters: 50,
+        maxCharacters: 280,
+        maxTries: 100,
+        order: 2
+    },
+}
+```
+
+| Setting  | Default | Description |
+| ------------- | ------------- |
+| minCharacters | 0 | Generation algorithm will retry generation if the resulting sentence has fewer characters than this value. |
+| maxCharacters | 100000 | Generation algorithm will retry generation if the resulting sentence has more characters than this value. |
+| maxTries | 100 | Number of times generation will be attempted before failing and returning an empty string. |
+| order | 2 | Determines how many previous words are used to pick the next word in the generated sentence. The larger the value, the more similar generated sentences will be to the input sentences to the point where they will eventually become identical. |
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
