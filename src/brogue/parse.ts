@@ -4,7 +4,6 @@ import path from 'path';
 import JSON5 from 'json5';
 
 import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule, Variable, WeightedLexeme } from './grammar';
-import { expand } from './expand';
 import { Markov } from './markov';
 
 function parseExansion(data: string): Expansion {
@@ -80,9 +79,19 @@ function parseRule(name: string, data: any): Rule {
 }
 
 function trainMarkovSymbol(markovSymbol: MarkovSymbol, grammar: Grammar) {
-    // Expand sentences
-    const expandedStates = markovSymbol.markov.sentences.map((s) => expand(grammar, s));
-    markovSymbol.markov.setSentences(expandedStates);
+    const expandedSentences = markovSymbol.markov.sentences.flatMap((s) => {
+        if (s.startsWith('{') && s.endsWith('}')) {
+            const ruleName = s.slice(1, -1);
+            const rule = grammar.rules.get(ruleName);
+            if (!rule) {
+                throw new Error(`Could not find rule ${ruleName} when training markov synbol ${markovSymbol.name}`);
+            }
+            return rule.weightedLexemes.map((wl) => wl.lexeme.originalString);
+        } else {
+            return s;
+        }
+    });
+    markovSymbol.markov.setSentences(expandedSentences);
 
     markovSymbol.markov.train();
 }
