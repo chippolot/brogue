@@ -128,7 +128,7 @@ function _funcRoll(_: string, rollString: string): string {
         throw new Error(`Tried to invoke roll() without argument`);
     }
 
-    const matches = rollString.match(/(?<num>\d)d(?<sides>\d)(?:(?:\s?\+\s?(?<plus>\d))|(?:\s?-\s?(?<minus>\d)))?/);
+    const matches = rollString.match(/(?<num>\d+)d(?<sides>\d+)(?:(?:\s?\+\s?(?<plus>\d+))|(?:\s?-\s?(?<minus>\d+)))?/);
     if (!matches || !matches.groups?.num || !matches.groups?.sides) {
         throw new Error(`Failed to parse die roll string: ${rollString}`);
     }
