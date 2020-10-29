@@ -119,7 +119,40 @@ function _funcNounify(s: string): string {
     return `${infinitive}er`;
 }
 
+function _funcRandomNumber(min: number = 0, max: number = 99): string {
+    return (Math.floor(Math.random() * (max - min + 1) + min)).toString();
+}
+
+function _funcRoll(_: string, rollString: string): string {
+    if (!rollString) {
+        throw new Error(`Tried to invoke roll() without argument`);
+    }
+
+    const matches = rollString.match(/(?<num>\d)d(?<sides>\d)(?:(?:\s?\+\s?(?<plus>\d))|(?:\s?-\s?(?<minus>\d)))?/);
+    if (!matches || !matches.groups?.num || !matches.groups?.sides) {
+        throw new Error(`Failed to parse die roll string: ${rollString}`);
+    }
+
+    const num = parseInt(matches.groups.num, 10);
+    const sides = parseInt(matches.groups.sides, 10);
+
+    let val = 0;
+    for (let i = 0; i < num; ++i) {
+        val += Math.floor(Math.random() * sides + 1);
+    }
+
+    if (matches.groups.plus) {
+        val += parseInt(matches.groups.plus, 10);
+    }
+    if (matches.groups.minus) {
+        val -= parseInt(matches.groups.minus, 10);
+    }
+
+    return val.toString();
+}
+
 const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object.entries({
+    // Lexical
     capitalize: _funcCapitalize,
     capitalizeall: _funcCapitalizeAll,
     quotes: _funcQuotes,
@@ -136,6 +169,10 @@ const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object
     possessive: _funcPossessive,
     positive: _funcPositive,
     negative: _funcNegative,
+
+    // Numeric
+    randomNumber: _funcRandomNumber,
+    roll: _funcRoll,
 }));
 
 function getBuiltInModifier(name: string): Function | undefined {

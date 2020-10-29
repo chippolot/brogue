@@ -60,7 +60,7 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext): str
     const expansionName = expansion.name;
 
     // 1. Run expansion
-    let expandedString: string;
+    let expandedString: string = '';
     if (context.variables.has(expansionName)) {
         expandedString = context.variables.get(expansionName)!;
     } else if (grammar.markovSymbols.has(expansionName)) {
@@ -70,7 +70,7 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext): str
         const rule = grammar.rules.get(expansionName)!;
         const lexeme = pickLexeme(rule);
         expandedString = expandLexeme(lexeme, context);
-    } else {
+    } else if (expansionName) {
         throw new Error(`Expansion of ${expansionName} failed -- Could not find associated variable or rule or markov symbol with same name.`);
     }
 

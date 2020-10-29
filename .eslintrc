@@ -23,5 +23,6 @@
         "indent-legacy": 0,
         "id-length": 0,
         "babel/object-curly-spacing": 0,
+        "no-mixed-operators": 0,
     }, 
   }
