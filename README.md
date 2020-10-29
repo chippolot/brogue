@@ -165,7 +165,7 @@ Billy ate all of Trisha's tarts.
 #### Built-in Modifiers
 Brogue uses both the [Articles](https://github.com/chadkirby/Articles) and [Compromise](https://github.com/spencermountain/compromise/) libraries to provide several built-in modifiers:
 
-| Name  | Description |
+| Name | Description |
 | ------------- | ------------- |
 | capitalize  | `'a nice house' → 'A nice house'` |
 | capitalizeall  | `'a nice house' → 'A Nice House'` |
@@ -183,8 +183,9 @@ Brogue uses both the [Articles](https://github.com/chadkirby/Articles) and [Comp
 | possessive | `'Bill' → 'Bill's'` |
 | positive | `'didn't study' → 'studied'` |
 | negative | `'went' → 'did not go'` |
-| randomNumber | `'.randomNumber(0,10)' → '8'` |
-| roll | `'.roll(1d6+1)' → '5'` |
+| randomNumber | `'.randomNumber(0, 10)' → '8'` |
+| roll | `'.roll("1d6+1")' → '5'` |
+| uniques | `'.uniques("animals", 3, ", ")' → 'cat, dog, mouse'` |
 
 ### Core Grammars
 You can always create your own grammars to use with Brogue, but there is also a core set of existing grammars you can explore and import.

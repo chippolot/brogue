@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 import nlp from 'compromise';
 import Articles from 'articles';
+
+import { expandLexeme, ExpansionContext, pickLexeme } from './expand';
 
 function _isVowel(s: string): boolean {
     return s === 'a' || s === 'e' || s === 'i' || s === 'o' || s === 'u' || s === 'y' || s === 'A' || s === 'E' || s === 'I' || s === 'O' || s === 'U' || s === 'Y';
@@ -9,90 +12,90 @@ function _isConsonant(s: string): boolean {
     return !_isVowel(s);
 }
 
-function _funcCapitalize(s: string): string {
+function _funcCapitalize(s: string, _: ExpansionContext): string {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function _funcCapitalizeAll(s: string): string {
+function _funcCapitalizeAll(s: string, _: ExpansionContext): string {
     return s.replace(/(?:^|\s)\S/g, (a) => {
         return a.toUpperCase();
     });
 }
 
-function _funcQuotes(s: string): string {
+function _funcQuotes(s: string, _: ExpansionContext): string {
     return `"${s}"`;
 }
 
-function _funcTimes(s: string, n: any) {
-    return Array(Number(n)).fill(s).join(' ');
+function _funcTimes(s: string, _: ExpansionContext, n: number) {
+    return Array(n).fill(s).join(' ');
 }
 
-function _funcArtical(s: string): string {
+function _funcArtical(s: string, _: ExpansionContext): string {
     return Articles.articlize(s);
 }
 
-function _funcPluralize(s: string): string {
+function _funcPluralize(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Noun").nouns()
         .toPlural()
         .text();
 }
 
-function _funcSingularize(s: string): string {
+function _funcSingularize(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Noun").nouns()
         .toSingular()
         .text();
 }
 
-function _funcPossessive(s: string): string {
+function _funcPossessive(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Noun").nouns()
         .toPossessive()
         .text();
 }
 
-function _funcPastTense(s: string): string {
+function _funcPastTense(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Verb").verbs()
         .toPastTense()
         .text();
 }
 
-function _funcPresentTense(s: string): string {
+function _funcPresentTense(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Verb").verbs()
         .toPresentTense()
         .text();
 }
 
-function _funcFutureTense(s: string): string {
+function _funcFutureTense(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Verb").verbs()
         .toFutureTense()
         .text();
 }
 
-function _funcGerund(s: string): string {
+function _funcGerund(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Verb").verbs()
         .toGerund()
         .text();
 }
 
-function _funcInfinitive(s: string): string {
+function _funcInfinitive(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Verb").verbs()
         .toInfinitive()
         .text();
 }
 
-function _funcPositive(s: string): string {
+function _funcPositive(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Verb").verbs()
         .toPositive()
         .text();
 }
 
-function _funcNegative(s: string): string {
+function _funcNegative(s: string, _: ExpansionContext): string {
     return nlp(s).tag("#Verb").verbs()
         .toNegative()
         .text();
 }
 
-function _funcNounify(s: string): string {
-    const infinitive = _funcInfinitive(s);
+function _funcNounify(s: string, context: ExpansionContext): string {
+    const infinitive = _funcInfinitive(s, context);
     const lastChar = infinitive.charAt(infinitive.length - 1);
 
     if (lastChar === 'e') {
@@ -119,13 +122,13 @@ function _funcNounify(s: string): string {
     return `${infinitive}er`;
 }
 
-function _funcRandomNumber(_: string, minString: string = '0', maxString: string = '99'): string {
+function _funcRandomNumber(_: string, __: ExpansionContext, minString: string = '0', maxString: string = '99'): string {
     const min = parseInt(minString, 10);
     const max = parseInt(maxString, 10);
     return (Math.floor(Math.random() * (max - min + 1) + min)).toString();
 }
 
-function _funcRoll(_: string, rollString: string): string {
+function _funcRoll(_: string, __: ExpansionContext, rollString: string): string {
     if (!rollString) {
         throw new Error(`Tried to invoke roll() without argument`);
     }
@@ -153,6 +156,25 @@ function _funcRoll(_: string, rollString: string): string {
     return val.toString();
 }
 
+function _funcUniques(_: string, context: ExpansionContext, ruleName: string, num: number, separator: string = " "): string {
+    const rule = context.grammar.rules.get(ruleName);
+    if (!rule) {
+        throw new Error(`Failed to call modifier 'uniques'. Rule {ruleName} not found in loaded grammar.`);
+    }
+
+    const picks = [];
+    const pickedLexemes = [];
+
+    for (let i = 0; i < num; ++i) {
+
+        const lexeme = pickLexeme(rule, pickedLexemes);
+        pickedLexemes.push(lexeme);
+        picks.push(expandLexeme(lexeme, context));
+    }
+
+    return picks.join(separator);
+}
+
 const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object.entries({
     // Lexical
     capitalize: _funcCapitalize,
@@ -172,9 +194,10 @@ const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object
     positive: _funcPositive,
     negative: _funcNegative,
 
-    // Numeric
+    // Genrative
     randomNumber: _funcRandomNumber,
     roll: _funcRoll,
+    uniques: _funcUniques,
 }));
 
 function getBuiltInModifier(name: string): Function | undefined {

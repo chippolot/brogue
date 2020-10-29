@@ -14,11 +14,28 @@ class ExpansionContext {
     }
 }
 
-function pickLexeme(rule: Rule): Lexeme {
-    const weight = Math.random() * rule.totalWeight;
+function pickLexeme(rule: Rule, lexemesToIgnore?: Lexeme[]): Lexeme {
+    let totalWeight = rule.totalWeight;
+    let validSet = rule.weightedLexemes;
+
+    if (lexemesToIgnore) {
+        validSet = [...validSet];
+        lexemesToIgnore.forEach((lexeme) => {
+            const index = validSet.findIndex((x) => x.lexeme === lexeme);
+            if (index !== -1) {
+                totalWeight -= validSet[index].weight;
+                validSet.splice(index, 1);
+            }
+        });
+    }
+    if (validSet.length === 0) {
+        throw new Error(`Failed to pick lexeme from rule ${rule.name}. Ruleset is empty.`);
+    }
+
+    const weight = Math.random() * totalWeight;
 
     let current = 0;
-    for (const elem of rule.weightedLexemes) {
+    for (const elem of validSet) {
         current += elem.weight;
         if (weight < current) {
             return elem.lexeme;
@@ -31,7 +48,7 @@ function pickLexeme(rule: Rule): Lexeme {
 function callExpansionModifier(call: ExpansionModifierCall, str: string, context: ExpansionContext): string {
     const func = context.grammar.modifiers.get(call.name) ?? getBuiltInModifier(call.name);
     if (func) {
-        return func(str, ...call.args);
+        return func(str, context, ...call.args);
     }
     throw new Error(`Unrecognized function ${call.name}`);
 }
@@ -116,4 +133,7 @@ function expand(grammar: Grammar, text: string): string {
 
 export {
     expand,
+    pickLexeme,
+    expandLexeme,
+    ExpansionContext,
 };
