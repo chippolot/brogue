@@ -183,6 +183,8 @@ Brogue uses both the [Articles](https://github.com/chadkirby/Articles) and [Comp
 | possessive | `'Bill' → 'Bill's'` |
 | positive | `'didn't study' → 'studied'` |
 | negative | `'went' → 'did not go'` |
+| randomNumber | `'.randomNumber(0,10)' → '8'` |
+| roll | `'.roll(1d6+1)' → '5'` |
 
 ### Core Grammars
 You can always create your own grammars to use with Brogue, but there is also a core set of existing grammars you can explore and import.
