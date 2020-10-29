@@ -21,7 +21,9 @@ function parseExansion(data: string): Expansion {
 
         const call: ExpansionModifierCall = { name: callMatches.groups.func, args: [] };
         if (callMatches.groups.args) {
-            call.args = callMatches.groups.args.split(',');
+            call.args = callMatches.groups.args
+                .split(',')
+                .map((x) => x.trim());
         }
         expansion.modifierCalls.push(call);
     }

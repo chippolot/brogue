@@ -119,7 +119,9 @@ function _funcNounify(s: string): string {
     return `${infinitive}er`;
 }
 
-function _funcRandomNumber(_: string, min: number = 0, max: number = 99): string {
+function _funcRandomNumber(_: string, minString: string = '0', maxString: string = '99'): string {
+    const min = parseInt(minString, 10);
+    const max = parseInt(maxString, 10);
     return (Math.floor(Math.random() * (max - min + 1) + min)).toString();
 }
 
