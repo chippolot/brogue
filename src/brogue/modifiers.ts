@@ -162,14 +162,20 @@ function _funcUniques(_: string, context: ExpansionContext, ruleName: string, nu
         throw new Error(`Failed to call modifier 'uniques'. Rule {ruleName} not found in loaded grammar.`);
     }
 
-    const picks = [];
+    const picks: string[] = [];
     const pickedLexemes = [];
 
-    for (let i = 0; i < num; ++i) {
+    const maxTries = 9999;
+    let tries = 0;
+    while (picks.length < num && tries++ < maxTries) {
 
         const lexeme = pickLexeme(rule, pickedLexemes);
+        const expanded = expandLexeme(lexeme, context);
+        if (picks.includes(expanded)) {
+            continue;
+        }
         pickedLexemes.push(lexeme);
-        picks.push(expandLexeme(lexeme, context));
+        picks.push(expanded);
     }
 
     return picks.join(separator);

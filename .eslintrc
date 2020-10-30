@@ -8,7 +8,8 @@
         "plugin:@shopify/esnext"
     ],
     "env": {
-        "node": true
+        "node": true,
+        "mocha": true
     },
     "settings": {
         "import/resolver": {

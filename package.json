@@ -1,6 +1,6 @@
 {
     "name": "brogue",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "A Grammar based generative text library based on Tracery.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -11,17 +11,23 @@
         "procgen"
     ],
     "scripts": {
-        "build": "npm run lint && rimraf ./dist && tsc",
+        "build": "npm run lint && npm run test && rimraf ./dist && tsc",
+        "test": "mocha -r ts-node/register test/**/*.spec.ts",
+        "test-watch": "mocha -r ts-node/register test/**/*.spec.ts --watch --watch-files test, src",
         "lint": "eslint . --ext .ts --fix"
     },
     "author": "Ben Smith",
     "license": "MIT",
     "devDependencies": {
         "@shopify/eslint-plugin": "^39.0.1",
+        "@types/chai": "^4.2.14",
+        "@types/mocha": "^8.0.3",
         "@types/node": "^14.14.2",
         "@typescript-eslint/eslint-plugin": "^4.5.0",
         "@typescript-eslint/parser": "^4.5.0",
+        "chai": "^4.2.0",
         "eslint": "^7.11.0",
+        "mocha": "^8.2.0",
         "rimraf": "^3.0.2",
         "ts-node": "^9.0.0",
         "typescript": "^4.0.3"

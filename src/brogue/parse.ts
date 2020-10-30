@@ -23,7 +23,7 @@ function parseExansion(data: string): Expansion {
         if (callMatches.groups.args) {
             const argsString = callMatches.groups.args;
             const argsJSONString = `[${argsString}]`;
-            call.args = JSON.parse(argsJSONString);
+            call.args = JSON5.parse(argsJSONString);
         }
         expansion.modifierCalls.push(call);
     }
