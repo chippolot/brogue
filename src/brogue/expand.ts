@@ -14,7 +14,7 @@ class ExpansionContext {
     }
 }
 
-function pickLexeme(rule: Rule, lexemesToIgnore?: Lexeme[]): Lexeme {
+function pickLexeme(rule: Rule, lexemesToIgnore?: Lexeme[]): Lexeme | undefined {
     let totalWeight = rule.totalWeight;
     let validSet = rule.weightedLexemes;
 
@@ -29,7 +29,7 @@ function pickLexeme(rule: Rule, lexemesToIgnore?: Lexeme[]): Lexeme {
         });
     }
     if (validSet.length === 0) {
-        throw new Error(`Failed to pick lexeme from rule ${rule.name}. Ruleset is empty.`);
+        return undefined;
     }
 
     const weight = Math.random() * totalWeight;
@@ -86,7 +86,11 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext): str
     } else if (grammar.rules.has(expansionName)) {
         const rule = grammar.rules.get(expansionName)!;
         const lexeme = pickLexeme(rule);
-        expandedString = expandLexeme(lexeme, context);
+        if (!lexeme) {
+            expandedString = '';
+        } else {
+            expandedString = expandLexeme(lexeme, context);
+        }
     } else if (expansionName) {
         throw new Error(`Expansion of ${expansionName} failed -- Could not find associated variable or rule or markov symbol with same name.`);
     }

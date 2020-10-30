@@ -170,6 +170,10 @@ function _funcUniques(_: string, context: ExpansionContext, ruleName: string, nu
     while (picks.length < num && tries++ < maxTries) {
 
         const lexeme = pickLexeme(rule, pickedLexemes);
+        if (!lexeme) {
+            break;
+        }
+
         const expanded = expandLexeme(lexeme, context);
         if (picks.includes(expanded)) {
             continue;
