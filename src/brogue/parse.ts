@@ -6,7 +6,8 @@ import JSON5 from 'json5';
 import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule, Variable, WeightedLexeme } from './grammar';
 import { Markov } from './markov';
 
-function parseExansion(data: string): Expansion {
+/*
+function parseExpansion(data: string): Expansion {
     const expansion: Expansion = { name: "", modifierCalls: [] };
 
     const tokens = data.split('.');
@@ -30,15 +31,117 @@ function parseExansion(data: string): Expansion {
 
     return expansion;
 }
+*/
 
 function parseLexeme(data: string): Lexeme {
     const lexeme: Lexeme = { originalString: data, formatString: "", expansions: [] };
 
-    let replacementCounter = 0;
-    lexeme.formatString = data.replace(/{([^}]+)}/g, (_, innerMatch) => {
-        lexeme.expansions.push(parseExansion(innerMatch));
-        return `{${replacementCounter++}}`;
-    });
+    let i = 0;
+    let j = -1;
+    let numReplacements = 0;
+
+    function parseError(errorString: string): Error {
+        return new Error(`[Parsing] ${errorString}: ${data.slice(0, 255)}...`);
+    }
+
+    function parseExpansionModifierArgs(): any[] {
+        let inString = false;
+        let stringChar = '';
+
+        while (++j < data.length) {
+            const c = data[j];
+
+            if (!inString) {
+                // When we detect that the param list closes, json parse the contents to handle all arg types
+                if (c === ')') {
+                    const argListJSON = data.slice(i, j);
+                    i = j + 1;
+                    return JSON5.parse(`[${argListJSON}]`);
+                // Start tracking string (where we don't care about ending the argument list)
+                } else if (c === '\'' || c === '"') {
+                    inString = true;
+                    stringChar = c;
+                }
+            } else {
+                // Next character is escaped, skip it
+                if (c === '\\') {
+                    j++;
+                // Detected end of string
+                } else if (c === stringChar) {
+                    inString = false;
+                }
+            }
+        }
+        throw parseError('Reached end of string before closing argument list');
+    }
+
+    function parseExpansionModifier(): ExpansionModifierCall {
+        const modifier: ExpansionModifierCall = { name: "", args: [] };
+
+        let didParseArgs = false;
+
+        while (++j < data.length) {
+            const c = data[j];
+
+            if (c === '(') {
+                modifier.name = data.slice(i, j);
+                i = j + 1;
+                modifier.args = parseExpansionModifierArgs();
+                didParseArgs = true;
+            } else if (c === '}' || c === '.') {
+                if (!didParseArgs) {
+                    modifier.name = data.slice(i, j);
+                }
+                i = j-- + 1;
+                if (!modifier.name) {
+                    throw parseError(`Empty modifier name`);
+                }
+                return modifier;
+            } else if (c === ')') {
+                throw parseError(`Encountered invalid ')' character when outside arg list`);
+            } else if (c === '{') {
+                throw parseError(`Encountered invalid '{' character when parsing modifier`);
+            }
+        }
+        throw parseError(`Reached end of string before before closing expansion`);
+    }
+
+    function parseExpansion(): Expansion {
+        const expansion: Expansion = { name: "", modifierCalls: [] };
+
+        while (++j < data.length) {
+            const c = data[j];
+
+            if (c === '}') {
+                lexeme.formatString += `${numReplacements++}`;
+                if (expansion.modifierCalls.length === 0) {
+                    expansion.name = data.slice(i, j);
+                }
+                i = j + 1;
+                return expansion;
+            } else if (c === '.') {
+                expansion.name = data.slice(i, j);
+                i = j + 1;
+                expansion.modifierCalls.push(parseExpansionModifier());
+            } else if (c === '{') {
+                throw parseError(`Encountered invalid '{' character when parsing expansion`);
+            }
+        }
+        throw parseError(`Reached end of string before before closing expansion`);
+    }
+
+    while (++j < data.length) {
+        const c = data[j];
+
+        if (c === '{') {
+            lexeme.formatString += data.slice(i, j);
+            i = j + 1;
+            lexeme.expansions.push(parseExpansion());
+        } else if (c === '}') {
+            throw parseError(`Encountered invalid '}' character when outside expansion`);
+        }
+    }
+    lexeme.formatString += data.slice(i, j);
 
     return lexeme;
 }

@@ -25,5 +25,7 @@
         "id-length": 0,
         "babel/object-curly-spacing": 0,
         "no-mixed-operators": 0,
+        "no-negated-condition": 0,
+        "no-lonely-if": 0
     }, 
   }

@@ -13,6 +13,15 @@ describe('parseLexeme', () => {
     });
 
     describe('parsing expansions', () => {
+
+        it('should fail to parse invalid expansions', () => {
+            expect(() => { parseLexeme("}cat.a"); }).to.throw();
+            expect(() => { parseLexeme("{cat.a"); }).to.throw();
+            expect(() => { parseLexeme("{cat.a{}"); }).to.throw();
+            expect(() => { parseLexeme("{cat.a}}"); }).to.throw();
+        });
+
+
         it('should parse lexeme with expansions', () => {
             const lexeme = parseLexeme("{cat} {dog}");
             expect(lexeme.expansions).to.have.lengthOf(2);
@@ -22,6 +31,16 @@ describe('parseLexeme', () => {
         });
 
         describe('parsing modifiers', () => {
+
+            it('should fail to parse invalid modifiers', () => {
+                expect(() => { parseLexeme("{cat..}"); }).to.throw();
+                expect(() => { parseLexeme("{cat. .}"); }).to.throw();
+                expect(() => { parseLexeme("{cat.(}"); }).to.throw();
+                expect(() => { parseLexeme("{cat.)}"); }).to.throw();
+                expect(() => { parseLexeme("{cat.())}"); }).to.throw();
+            });
+
+
             it('should parse modifiers without argument lists', () => {
                 const lexeme = parseLexeme("{cat.a} {cat.a()}");
 
@@ -35,7 +54,7 @@ describe('parseLexeme', () => {
             });
 
             it('should parse chained modifiers', () => {
-                const lexeme = parseLexeme("{cat.a.b.c}");
+                const lexeme = parseLexeme("{cat.a.b().c}");
 
                 expect(lexeme.expansions[0].modifierCalls).to.have.lengthOf(3);
                 expect(lexeme.expansions[0].modifierCalls[0].name).to.equal('a');
@@ -55,10 +74,27 @@ describe('parseLexeme', () => {
 
                 expectArguments(parseLexeme("{cat.a('string')}"), 'string');
                 expectArguments(parseLexeme('{cat.a("string")}'), 'string');
+                expectArguments(parseLexeme('{cat.a("\\"string\\"")}'), '"string"');
+                expectArguments(parseLexeme('{cat.a(", )")}'), ', )');
                 expectArguments(parseLexeme('{cat.a(1)}'), 1);
                 expectArguments(parseLexeme('{cat.a(2.5)}'), 2.5);
                 expectArguments(parseLexeme('{cat.a("string", 1, 30)}'), 'string', 1, 30);
                 expectArguments(parseLexeme('{cat.a("string {thing}")}'), 'string {thing}');
+            });
+
+            it('should parse chained modifiers with arguments', () => {
+                function expectModifier(lexeme: Lexeme, i: number, funcName: string, ...args: any[]): void {
+                    expect(lexeme.expansions[0].modifierCalls[i].name).to.equal(funcName);
+                    expect(lexeme.expansions[0].modifierCalls[i].args).to.have.lengthOf(args.length);
+                    for (let j = 0; j < args.length; ++j) {
+                        expect(lexeme.expansions[0].modifierCalls[i].args[j]).to.equal(args[j]);
+                    }
+                }
+
+                const lexeme = parseLexeme('{cat.a(1,2).b("string")}');
+
+                expectModifier(lexeme, 0, 'a', 1, 2);
+                expectModifier(lexeme, 1, 'b', 'string');
             });
         });
     });

@@ -2,7 +2,7 @@ import { Markov } from './markov';
 
 interface ExpansionModifierCall {
     name: string;
-    args: string[];
+    args: any[];
 }
 
 interface Expansion {
