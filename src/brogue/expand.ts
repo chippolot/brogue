@@ -14,7 +14,7 @@ class ExpansionContext {
     }
 }
 
-function pickLexeme(rule: Rule, lexemesToIgnore?: Lexeme[]): Lexeme | undefined {
+function pickLexeme(rule: Rule, context: ExpansionContext, lexemesToIgnore?: Lexeme[]): Lexeme | undefined {
     let totalWeight = rule.totalWeight;
     let validSet = rule.weightedLexemes;
 
@@ -32,7 +32,7 @@ function pickLexeme(rule: Rule, lexemesToIgnore?: Lexeme[]): Lexeme | undefined 
         return undefined;
     }
 
-    const weight = Math.random() * totalWeight;
+    const weight = context.grammar.random.random() * totalWeight;
 
     let current = 0;
     for (const elem of validSet) {
@@ -53,10 +53,10 @@ function callExpansionModifier(call: ExpansionModifierCall, str: string, context
     throw new Error(`Unrecognized function ${call.name}`);
 }
 
-function generateMarkovString(markovSymbol: MarkovSymbol): string {
+function generateMarkovString(markovSymbol: MarkovSymbol, context: ExpansionContext): string {
     const settings = markovSymbol.markov.settings;
     for (let i = 0; i < settings.maxTries; ++i) {
-        const str = markovSymbol.markov.generate();
+        const str = markovSymbol.markov.generate(context);
         if (str === undefined) {
             continue;
         }
@@ -82,10 +82,10 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext): str
         expandedString = context.variables.get(expansionName)!;
     } else if (grammar.markovSymbols.has(expansionName)) {
         const markovSymbol = grammar.markovSymbols.get(expansionName)!;
-        expandedString = generateMarkovString(markovSymbol);
+        expandedString = generateMarkovString(markovSymbol, context);
     } else if (grammar.rules.has(expansionName)) {
         const rule = grammar.rules.get(expansionName)!;
-        const lexeme = pickLexeme(rule);
+        const lexeme = pickLexeme(rule, context);
         if (!lexeme) {
             expandedString = '';
         } else {
@@ -121,18 +121,31 @@ function expandLexeme(lexeme: Lexeme, context: ExpansionContext): string {
 
 }
 
+let activeExpansionContext: ExpansionContext | undefined;
+let expansionDepth = 0;
+
 function expand(grammar: Grammar, text: string): string {
+    const context = activeExpansionContext ?? new ExpansionContext(grammar);
+    activeExpansionContext = context;
+    expansionDepth++;
 
-    const context = new ExpansionContext(grammar);
-    const lexeme = parseLexeme(text);
+    try {
+        const lexeme = parseLexeme(text);
 
-    // Expand variables
-    grammar.variables.forEach((variable) => {
-        context.variables.set(variable.name, expandLexeme(variable.lexeme, context));
-    });
+        // Expand variables
+        if (expansionDepth === 1) {
+            grammar.variables.forEach((variable) => {
+                context.variables.set(variable.name, expandLexeme(variable.lexeme, context));
+            });
+        }
 
-    // Expand lexeme
-    return expandLexeme(lexeme, context);
+        // Expand lexeme
+        return expandLexeme(lexeme, context);
+    } finally {
+        if (--expansionDepth === 0) {
+            activeExpansionContext = undefined;
+        }
+    }
 }
 
 export {

@@ -122,13 +122,13 @@ function _funcNounify(s: string, context: ExpansionContext): string {
     return `${infinitive}er`;
 }
 
-function _funcRandomNumber(_: string, __: ExpansionContext, minString: string = '0', maxString: string = '99'): string {
+function _funcRandomNumber(_: string, context: ExpansionContext, minString: string = '0', maxString: string = '99'): string {
     const min = parseInt(minString, 10);
     const max = parseInt(maxString, 10);
-    return (Math.floor(Math.random() * (max - min + 1) + min)).toString();
+    return context.grammar.random.intBetween(min, max).toString();
 }
 
-function _funcRoll(_: string, __: ExpansionContext, rollString: string): string {
+function _funcRoll(_: string, context: ExpansionContext, rollString: string): string {
     if (!rollString) {
         throw new Error(`Tried to invoke roll() without argument`);
     }
@@ -143,7 +143,7 @@ function _funcRoll(_: string, __: ExpansionContext, rollString: string): string 
 
     let val = 0;
     for (let i = 0; i < num; ++i) {
-        val += Math.floor(Math.random() * sides + 1);
+        val += context.grammar.random.intBetween(1, sides);
     }
 
     if (matches.groups.plus) {
@@ -169,7 +169,7 @@ function _funcUniques(_: string, context: ExpansionContext, ruleName: string, nu
     let tries = 0;
     while (picks.length < num && tries++ < maxTries) {
 
-        const lexeme = pickLexeme(rule, pickedLexemes);
+        const lexeme = pickLexeme(rule, context, pickedLexemes);
         if (!lexeme) {
             break;
         }

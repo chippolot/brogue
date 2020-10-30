@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import JSON5 from 'json5';
+import {create as createRandom} from 'random-seed';
 
 import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule, Variable, WeightedLexeme } from './grammar';
 import { Markov } from './markov';
@@ -241,6 +242,7 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
     const grammarDirName = basePath ? path.dirname(basePath) : process.cwd();
 
     const grammar: Grammar = {
+        random: createRandom(),
         rules: new Map<string, Rule>(),
         variables: new Map<string, Variable>(),
         modifiers: new Map<string, Function>(),

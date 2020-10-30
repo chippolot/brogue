@@ -1,3 +1,5 @@
+import { ExpansionContext } from "./expand";
+
 interface MarkovSettings {
     order: number;
     minCharacters: number;
@@ -69,7 +71,7 @@ class Markov {
         });
     }
 
-    generate(): string | undefined {
+    generate(context: ExpansionContext): string | undefined {
         if (!this.trainingData) {
             throw new Error("Markov is not trained. Call `train()` before generating.");
         }
@@ -84,7 +86,7 @@ class Markov {
             const key = keyTokens.join(' ');
             keyTokens.shift();
 
-            const next = this._randomElementForKey(key);
+            const next = this._randomElementForKey(key, context);
             if (next === END_SYMBOL) {
                 break;
             }
@@ -101,7 +103,7 @@ class Markov {
         return words.join(' ');
     }
 
-    _randomElementForKey(key: string): string {
+    _randomElementForKey(key: string, context: ExpansionContext): string {
         if (!this.trainingData) {
             throw new Error("Markov is not trained. Call `train()` before generating.");
         }
@@ -111,7 +113,7 @@ class Markov {
             throw new Error(`No training data for key ${key}`);
         }
 
-        return set[Math.floor(Math.random() * set.length)];
+        return set[context.grammar.random.range(set.length)];
     }
 }
 

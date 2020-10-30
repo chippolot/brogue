@@ -1,3 +1,5 @@
+import { RandomSeed } from 'random-seed';
+
 import { Markov } from './markov';
 
 interface ExpansionModifierCall {
@@ -38,6 +40,7 @@ interface MarkovSymbol {
 }
 
 interface Grammar {
+    random: RandomSeed,
     rules: Map<string, Rule>;
     variables: Map<string, Variable>;
     modifiers: Map<string, Function>;
