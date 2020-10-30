@@ -293,7 +293,7 @@ function parseGrammarString(text: string, basePath?: string): Grammar {
     try {
         grammarObject = JSON5.parse(text);
     } catch (e) {
-        throw new Error(`Failed to parse JSON5 text ${text.slice(0, 256)}... Internal error: ${e}`);
+        throw new Error(`Failed to parse JSON5 text ${text.slice(0, 256)}...\nInternal error: ${e}`);
     }
     return parseGrammarObject(grammarObject, basePath);
 }
