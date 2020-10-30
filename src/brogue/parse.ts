@@ -6,33 +6,6 @@ import JSON5 from 'json5';
 import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule, Variable, WeightedLexeme } from './grammar';
 import { Markov } from './markov';
 
-/*
-function parseExpansion(data: string): Expansion {
-    const expansion: Expansion = { name: "", modifierCalls: [] };
-
-    const tokens = data.split('.');
-    expansion.name = tokens[0];
-
-    for (let i = 1; i < tokens.length; ++i) {
-        const callData = tokens[i];
-        const callMatches = callData.match(/(?<func>[^()]+)(?:\((?<args>.*)\))?/);
-        if (!callMatches || !callMatches.groups?.func) {
-            throw new Error(`Failed to parse expression function call: ${data}`);
-        }
-
-        const call: ExpansionModifierCall = { name: callMatches.groups.func, args: [] };
-        if (callMatches.groups.args) {
-            const argsString = callMatches.groups.args;
-            const argsJSONString = `[${argsString}]`;
-            call.args = JSON5.parse(argsJSONString);
-        }
-        expansion.modifierCalls.push(call);
-    }
-
-    return expansion;
-}
-*/
-
 function parseLexeme(data: string): Lexeme {
     const lexeme: Lexeme = { originalString: data, formatString: "", expansions: [] };
 
@@ -113,7 +86,7 @@ function parseLexeme(data: string): Lexeme {
             const c = data[j];
 
             if (c === '}') {
-                lexeme.formatString += `${numReplacements++}`;
+                lexeme.formatString += `{${numReplacements++}}`;
                 if (expansion.modifierCalls.length === 0) {
                     expansion.name = data.slice(i, j);
                 }

@@ -21,13 +21,16 @@ describe('parseLexeme', () => {
             expect(() => { parseLexeme("{cat.a}}"); }).to.throw();
         });
 
-
         it('should parse lexeme with expansions', () => {
-            const lexeme = parseLexeme("{cat} {dog}");
+            const str = '{cat} {dog}';
+            const lexeme = parseLexeme(str);
             expect(lexeme.expansions).to.have.lengthOf(2);
 
             const expansionNames = lexeme.expansions.map((x) => x.name);
             expect(expansionNames).to.include.members(['cat', 'dog']);
+
+            expect(lexeme.originalString).to.equal(str);
+            expect(lexeme.formatString).to.equal('{0} {1}');
         });
 
         describe('parsing modifiers', () => {
@@ -51,6 +54,8 @@ describe('parseLexeme', () => {
                 expect(lexeme.expansions[1].modifierCalls).to.have.lengthOf(1);
                 expect(lexeme.expansions[1].modifierCalls[0].name).to.equal('a');
                 expect(lexeme.expansions[1].modifierCalls[0].args).to.have.lengthOf(0);
+
+                expect(lexeme.formatString).to.equal('{0} {1}');
             });
 
             it('should parse chained modifiers', () => {
