@@ -320,11 +320,15 @@ function parseGrammarObject(obj: any, basePath?: string): Grammar {
     }
 
     // Parse variables
-    const variableStrings: Object = obj._variables;
+    const variableStrings: Array<string> = obj._variables;
     if (variableStrings) {
-        for (const [name, value] of Object.entries(variableStrings)) {
-            const variable: Variable = { name, lexeme: parseLexeme(value) };
-            grammar.variables.set(variable.name, variable);
+        for (const variableString of variableStrings) {
+            const lexeme: Lexeme = parseLexeme(variableString);
+            if (lexeme.variables) {
+                for (const [name, value] of lexeme.variables) {
+                    grammar.variables.set(name, value);
+                }
+            }
         }
     }
 

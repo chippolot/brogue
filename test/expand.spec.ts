@@ -39,9 +39,9 @@ describe('expand', () => {
 
     describe('variables', () => {
         it('expands global variables', () => {
-            grammarObject._variables = {
-                $ruleA: '{ruleA}',
-            };
+            grammarObject._variables = [
+                '{$ruleA= {ruleA}}',
+            ];
 
             const grammar = parseGrammarObject(grammarObject);
             sinon.stub(grammar.random, 'random')
@@ -68,6 +68,14 @@ describe('expand', () => {
 
             expanded = expand(grammar, '{$ruleA} {$ruleA} {ruleA}{$ruleA= {ruleA}}');
             expect(expanded).to.equal('a a b');
+        });
+
+        it('fails to expand scoped variables in parent scope', () => {
+            expect.fail();
+        });
+
+        it('expands scoped variables in child scope', () => {
+            expect.fail();
         });
     });
 });

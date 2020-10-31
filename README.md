@@ -130,17 +130,26 @@ Grammars can also be parsed from either JSON5 strings or Javascript objects usin
 Grammars parsed this way can still use the `_includes` feature to mix in additional files. These file paths will be resolved relative to the current working directory.
 
 ### Variables
-Grammar variables are special key-value pairs stored in the `_variables` key in a grammar.
-When expanding text, all variables are expanded a single time before doing anything else and the resulting values
-are used whenever the variable symbols appear later during text expansion. This is in contrast to standard expansion
-symbols which will result in a new random expansion each time they appear.
+Variables are special expansions which are evaluated once and then re-used everywhere they appear. They can be used to "save data" during an expansion if you want to refer to the same random choice multiple times.  
+
+Variables look similar to standard expansions but with a name and a value.
+The variable value is parsed just like a normal text string so it can contain one or more expansions.
+```
+//{variable_name= variable_value}
+{my_cat= {name.possessive} {animal}}
+```
+
+This value can be 
+
+#### Global Variables
+Any variables defined in the `_variables` key in a grammar can be used anywhere during expansions.
 
 Example:
 ```
 {
-    _variables: {
-        hero_name: '{name}'
-    },
+    _variables: [
+        '{hero_name= {name}}'
+    ],
     name: ['Barbara', 'Gwendolyn', 'Sally'],
     artifact: ['Sacred Stone', 'Shiny Fork', 'Holy Donut'],
     story: '{hero_name} went questing one day. As {hero_name} opened the treasure chest, they found {artifact}, {artifact}, and {artifact}.'
@@ -148,6 +157,18 @@ Example:
 ```
 
 This example would use the same randomly chosen name everywhere the `{hero_name}` variable appears, but choose a new random artifact for each of the three `{artifact}` symbols.
+
+#### Inline Variables
+Variables can also be declared inline in text strings. When declaring variables in this manner, they can only be used in that string and in expansions stemming from that string. Inline variable declarations will not be expanded in the strings in which they are declared -- they are erased from the string after they are parsed.
+
+Example:
+```
+{
+    name: ['Barbara', 'Gwendolyn', 'Sally'],
+    artifact: ['Sacred Stone', 'Shiny Fork', 'Holy Donut'],
+    story: '{hero_name= {name}}{hero_name} went questing one day. As {hero_name} opened the treasure chest, they found {artifact}, {artifact}, and {artifact}.'
+}
+```
 
 ### Modifiers
 Expansion symbols can have any number of modifiers chained to them to affect the output.
@@ -186,6 +207,7 @@ Brogue uses both the [Articles](https://github.com/chadkirby/Articles) and [Comp
 | randomNumber | `'.randomNumber(0, 10)' → '8'` |
 | roll | `'.roll("1d6+1")' → '5'` |
 | uniques | `'.uniques("animals", 3, ", ")' → 'cat, dog, mouse'` |
+| numberToWords | `'3.numberToWords' → 'three'` |
 
 ### Core Grammars
 You can always create your own grammars to use with Brogue, but there is also a core set of existing grammars you can explore and import.
