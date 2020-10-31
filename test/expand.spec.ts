@@ -148,7 +148,7 @@ describe('expand', () => {
 
             it('"positive" modifier', () => {
                 const grammar = parseGrammarObject({
-                    verbNegative: 'does not run'
+                    verbNegative: 'does not run',
                 });
 
                 expect(expand(grammar, '{verbNegative.positive}')).to.equal('does run');
@@ -199,6 +199,12 @@ describe('expand', () => {
                 });
                 sinon.stub(grammar.random, 'random').returns(0);
                 expect(expand(grammar, '{.uniques("choices", 3, ", ")}')).to.equal('a, b, c');
+            });
+
+            it('"choose" modifier', () => {
+                const grammar = parseGrammarObject({});
+                sinon.stub(grammar.random, 'range').returns(1);
+                expect(expand(grammar, '{.choose("cat", "dog", "bird")}')).to.equal('dog');
             });
         });
     });

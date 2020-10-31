@@ -44,7 +44,6 @@ describe('parseLexeme', () => {
                 expect(() => { parseLexeme("{cat.())}"); }).to.throw();
             });
 
-
             it('parses modifiers without argument lists', () => {
                 const lexeme = parseLexeme("{cat.a} {cat.a()}");
 

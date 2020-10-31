@@ -197,6 +197,10 @@ function _funcNumberToWords(s: string, _: ExpansionContext): string {
     return numWords(parsed);
 }
 
+function _funcChoose(_: string, context: ExpansionContext, ...args: any[]) {
+    return args[context.grammar.random.range(args.length)];
+}
+
 const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object.entries({
     // Lexical
     capitalize: _funcCapitalize,
@@ -221,6 +225,7 @@ const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object
     randomNumber: _funcRandomNumber,
     roll: _funcRoll,
     uniques: _funcUniques,
+    choose: _funcChoose
 }));
 
 function getBuiltInModifier(name: string): Function | undefined {

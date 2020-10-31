@@ -204,10 +204,11 @@ Brogue uses both the [Articles](https://github.com/chadkirby/Articles) and [Comp
 | possessive | `'Bill' → 'Bill's'` |
 | positive | `'didn't study' → 'studied'` |
 | negative | `'went' → 'did not go'` |
+| numberToWords | `'3.numberToWords' → 'three'` |
 | randomNumber | `'.randomNumber(0, 10)' → '8'` |
 | roll | `'.roll("1d6+1")' → '5'` |
 | uniques | `'.uniques("animals", 3, ", ")' → 'cat, dog, mouse'` |
-| numberToWords | `'3.numberToWords' → 'three'` |
+| choose | `'.choose("cat", "dog", "bird")' → 'dog'` |
 
 ### Core Grammars
 You can always create your own grammars to use with Brogue, but there is also a core set of existing grammars you can explore and import.
