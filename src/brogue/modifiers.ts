@@ -225,7 +225,7 @@ const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object
     randomNumber: _funcRandomNumber,
     roll: _funcRoll,
     uniques: _funcUniques,
-    choose: _funcChoose
+    choose: _funcChoose,
 }));
 
 function getBuiltInModifier(name: string): Function | undefined {
