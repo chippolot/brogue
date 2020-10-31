@@ -2,23 +2,21 @@ import fs from 'fs';
 import path from 'path';
 
 import JSON5 from 'json5';
-import {create as createRandom} from 'random-seed';
+import { create as createRandom } from 'random-seed';
 
 import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule, Variable, WeightedLexeme } from './grammar';
 import { Markov } from './markov';
 
 function parseLexeme(data: string): Lexeme {
-    const lexeme: Lexeme = { originalString: data, formatString: "", expansions: [] };
-
     let i = 0;
     let j = -1;
-    let numReplacements = 0;
+    const whitespaceChars: any = { ' ': true, '\t': true, '\n': true };
 
-    function parseError(errorString: string): Error {
-        return new Error(`[Parsing] ${errorString}: ${data.slice(0, 255)}...`);
+    function _parseError(errorString: string): Error {
+        return new Error(`[Parsing] ${errorString}:\n${data.slice(0, 255)}...`);
     }
 
-    function parseExpansionModifierArgs(): any[] {
+    function _parseExpansionModifierArgs(): any[] {
         let inString = false;
         let stringChar = '';
 
@@ -31,7 +29,7 @@ function parseLexeme(data: string): Lexeme {
                     const argListJSON = data.slice(i, j);
                     i = j + 1;
                     return JSON5.parse(`[${argListJSON}]`);
-                // Start tracking string (where we don't care about ending the argument list)
+                    // Start tracking string (where we don't care about ending the argument list)
                 } else if (c === '\'' || c === '"') {
                     inString = true;
                     stringChar = c;
@@ -40,16 +38,16 @@ function parseLexeme(data: string): Lexeme {
                 // Next character is escaped, skip it
                 if (c === '\\') {
                     j++;
-                // Detected end of string
+                    // Detected end of string
                 } else if (c === stringChar) {
                     inString = false;
                 }
             }
         }
-        throw parseError('Reached end of string before closing argument list');
+        throw _parseError('Reached end of string before closing argument list');
     }
 
-    function parseExpansionModifier(): ExpansionModifierCall {
+    function _parseExpansionModifier(): ExpansionModifierCall {
         const modifier: ExpansionModifierCall = { name: "", args: [] };
 
         let didParseArgs = false;
@@ -60,7 +58,7 @@ function parseLexeme(data: string): Lexeme {
             if (c === '(') {
                 modifier.name = data.slice(i, j);
                 i = j + 1;
-                modifier.args = parseExpansionModifierArgs();
+                modifier.args = _parseExpansionModifierArgs();
                 didParseArgs = true;
             } else if (c === '}' || c === '.') {
                 if (!didParseArgs) {
@@ -68,26 +66,63 @@ function parseLexeme(data: string): Lexeme {
                 }
                 i = j-- + 1;
                 if (!modifier.name) {
-                    throw parseError(`Empty modifier name`);
+                    throw _parseError(`Empty modifier name`);
                 }
                 return modifier;
             } else if (c === ')') {
-                throw parseError(`Encountered invalid ')' character when outside arg list`);
+                throw _parseError(`Encountered invalid ')' character when outside arg list`);
             } else if (c === '{') {
-                throw parseError(`Encountered invalid '{' character when parsing modifier`);
+                throw _parseError(`Encountered invalid '{' character when parsing modifier`);
             }
         }
-        throw parseError(`Reached end of string before before closing expansion`);
+        throw _parseError(`Reached end of string before before closing expansion`);
     }
 
-    function parseExpansion(): Expansion {
+    function _lookaheadIsVariable(): boolean {
+        let k = j;
+        while (++k < data.length) {
+            const c = data[k];
+            if (whitespaceChars[c]) {
+                return false;
+            } else if (c === '}') {
+                return false;
+            } else if (c === '=') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function _parseVariable(): Variable {
+        let name: string | undefined;
+
+        while (++j < data.length) {
+            const c = data[j];
+            if (c === '=') {
+                name = data.slice(i, j);
+                if (!name?.trim()) {
+                    throw _parseError(`Variable has empty name`);
+                }
+                if (data.length < j + 1) {
+                    throw _parseError(`Expected space after variable name but found end of string. Example: {a= value}`);
+                } else if (data[j + 1] !== ' ') {
+                    throw _parseError(`Expected space after variable name but found ${data[j + 1]}. Example: {a= value}`);
+                }
+                i = ++j + 1;
+                return { name, lexeme: _parseLexeme('}', 'variable') };
+            }
+        }
+        throw _parseError(`Reached end of string before before closing variable`);
+    }
+
+    function _parseExpansion(lexeme: Lexeme): Expansion {
         const expansion: Expansion = { name: "", modifierCalls: [] };
 
         while (++j < data.length) {
             const c = data[j];
 
             if (c === '}') {
-                lexeme.formatString += `{${numReplacements++}}`;
+                lexeme.formatString += `{${lexeme.expansions.length}}`;
                 if (expansion.modifierCalls.length === 0) {
                     expansion.name = data.slice(i, j);
                 }
@@ -96,28 +131,53 @@ function parseLexeme(data: string): Lexeme {
             } else if (c === '.') {
                 expansion.name = data.slice(i, j);
                 i = j + 1;
-                expansion.modifierCalls.push(parseExpansionModifier());
-            } else if (c === '{') {
-                throw parseError(`Encountered invalid '{' character when parsing expansion`);
+                expansion.modifierCalls.push(_parseExpansionModifier());
+            } else if (c === '{' || c === '=') {
+                throw _parseError(`Encountered invalid '${c}' character when parsing expansion`);
             }
         }
-        throw parseError(`Reached end of string before before closing expansion`);
+        throw _parseError(`Reached end of string before before closing expansion`);
     }
 
-    while (++j < data.length) {
-        const c = data[j];
+    function _parseLexeme(closingCharacter?: string, scopeType?: string): Lexeme {
+        const lexeme = {
+            originalString: "",
+            formatString: "",
+            expansions: [] as Expansion[],
+            variables: new Map<string, Variable>(),
+        };
 
-        if (c === '{') {
-            lexeme.formatString += data.slice(i, j);
-            i = j + 1;
-            lexeme.expansions.push(parseExpansion());
-        } else if (c === '}') {
-            throw parseError(`Encountered invalid '}' character when outside expansion`);
+        const starti = i;
+
+        while (++j < data.length) {
+            const c = data[j];
+
+            if (c === '{') {
+                lexeme.formatString += data.slice(i, j);
+                i = j + 1;
+                if (_lookaheadIsVariable()) {
+                    const variable = _parseVariable();
+                    lexeme.variables.set(variable.name, variable);
+                } else {
+                    lexeme.expansions.push(_parseExpansion(lexeme));
+                }
+            } else if (c === closingCharacter) {
+                i = j + 1;
+                break;
+            } else if (c === '}') {
+                throw _parseError(`Encountered invalid '}' character when outside expansion`);
+            }
         }
-    }
-    lexeme.formatString += data.slice(i, j);
+        if (closingCharacter && j >= data.length) {
+            throw _parseError(`Reached end of string before before closing ${scopeType}`);
+        }
+        lexeme.originalString = data.slice(starti, j);
+        lexeme.formatString += data.slice(i, j);
 
-    return lexeme;
+        return lexeme;
+    }
+
+    return _parseLexeme();
 }
 
 function parseWeightedLexeme(data: any): WeightedLexeme {

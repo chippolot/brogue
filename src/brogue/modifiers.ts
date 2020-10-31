@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import nlp from 'compromise';
 import Articles from 'articles';
+import numWords from 'num-words';
 
 import { expandLexeme, ExpansionContext, pickLexeme } from './expand';
 
@@ -185,6 +186,14 @@ function _funcUniques(_: string, context: ExpansionContext, ruleName: string, nu
     return picks.join(separator);
 }
 
+function _funcNumberToWords(s: string, _: ExpansionContext): string {
+    const parsed = parseInt(s, 10);
+    if (isNaN(parsed)) {
+        return s;
+    }
+    return numWords(parsed);
+}
+
 const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object.entries({
     // Lexical
     capitalize: _funcCapitalize,
@@ -203,6 +212,7 @@ const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object
     possessive: _funcPossessive,
     positive: _funcPositive,
     negative: _funcNegative,
+    numberToWords: _funcNumberToWords,
 
     // Genrative
     randomNumber: _funcRandomNumber,

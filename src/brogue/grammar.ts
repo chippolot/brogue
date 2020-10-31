@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { RandomSeed } from 'random-seed';
 
 import { Markov } from './markov';
@@ -16,6 +17,7 @@ interface Lexeme {
     originalString: string;
     formatString: string;
     expansions: Expansion[];
+    variables: Map<string, Variable> | undefined;
 }
 
 interface WeightedLexeme {

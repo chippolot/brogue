@@ -1,3 +1,4 @@
+/* eslint-disable babel/no-unused-expressions */
 import { expect } from 'chai';
 
 import 'mocha';
@@ -5,7 +6,7 @@ import { Lexeme } from '../src/brogue/grammar';
 import { parseLexeme } from '../src/brogue/parse';
 
 describe('parseLexeme', () => {
-    it('should parse empty lexeme', () => {
+    it('parses empty lexeme', () => {
         const lexeme = parseLexeme("");
         expect(lexeme.originalString).to.equal('');
         expect(lexeme.formatString).to.equal('');
@@ -14,14 +15,14 @@ describe('parseLexeme', () => {
 
     describe('parsing expansions', () => {
 
-        it('should fail to parse invalid expansions', () => {
+        it('fails to parse invalid expansions', () => {
             expect(() => { parseLexeme("}cat.a"); }).to.throw();
             expect(() => { parseLexeme("{cat.a"); }).to.throw();
             expect(() => { parseLexeme("{cat.a{}"); }).to.throw();
             expect(() => { parseLexeme("{cat.a}}"); }).to.throw();
         });
 
-        it('should parse lexeme with expansions', () => {
+        it('parses lexeme with expansions', () => {
             const str = '{cat} {dog}';
             const lexeme = parseLexeme(str);
             expect(lexeme.expansions).to.have.lengthOf(2);
@@ -35,7 +36,7 @@ describe('parseLexeme', () => {
 
         describe('parsing modifiers', () => {
 
-            it('should fail to parse invalid modifiers', () => {
+            it('fails to parse invalid modifiers', () => {
                 expect(() => { parseLexeme("{cat..}"); }).to.throw();
                 expect(() => { parseLexeme("{cat. .}"); }).to.throw();
                 expect(() => { parseLexeme("{cat.(}"); }).to.throw();
@@ -44,7 +45,7 @@ describe('parseLexeme', () => {
             });
 
 
-            it('should parse modifiers without argument lists', () => {
+            it('parses modifiers without argument lists', () => {
                 const lexeme = parseLexeme("{cat.a} {cat.a()}");
 
                 expect(lexeme.expansions[0].modifierCalls).to.have.lengthOf(1);
@@ -58,7 +59,7 @@ describe('parseLexeme', () => {
                 expect(lexeme.formatString).to.equal('{0} {1}');
             });
 
-            it('should parse chained modifiers', () => {
+            it('parses chained modifiers', () => {
                 const lexeme = parseLexeme("{cat.a.b().c}");
 
                 expect(lexeme.expansions[0].modifierCalls).to.have.lengthOf(3);
@@ -67,7 +68,7 @@ describe('parseLexeme', () => {
                 expect(lexeme.expansions[0].modifierCalls[2].name).to.equal('c');
             });
 
-            it('should parse modifiers with arguments', () => {
+            it('parses modifiers with arguments', () => {
                 function expectArguments(lexeme: Lexeme, ...args: any[]): void {
                     expect(lexeme.expansions[0].modifierCalls).to.have.lengthOf(1);
                     expect(lexeme.expansions[0].modifierCalls[0].name).to.equal('a');
@@ -87,7 +88,7 @@ describe('parseLexeme', () => {
                 expectArguments(parseLexeme('{cat.a("string {thing}")}'), 'string {thing}');
             });
 
-            it('should parse chained modifiers with arguments', () => {
+            it('parses chained modifiers with arguments', () => {
                 function expectModifier(lexeme: Lexeme, i: number, funcName: string, ...args: any[]): void {
                     expect(lexeme.expansions[0].modifierCalls[i].name).to.equal(funcName);
                     expect(lexeme.expansions[0].modifierCalls[i].args).to.have.lengthOf(args.length);
@@ -100,6 +101,47 @@ describe('parseLexeme', () => {
 
                 expectModifier(lexeme, 0, 'a', 1, 2);
                 expectModifier(lexeme, 1, 'b', 'string');
+            });
+        });
+
+        describe('parsing inline variables', () => {
+            function expectVariables(lexeme: Lexeme, variables: any): void {
+                expect(lexeme.variables).to.not.be.undefined;
+                if (!lexeme.variables) {
+                    return;
+                }
+                expect(lexeme.variables).to.be.lengthOf(Object.keys(variables).length);
+                for (const key of Object.keys(variables)) {
+                    const value = variables[key];
+                    expect(lexeme.variables).has.key(key);
+                    expect(lexeme.variables.get(key)!.lexeme.originalString).to.equal(value);
+                }
+            }
+
+            it('fails to parse invalid variables', () => {
+                expect(() => { parseLexeme('{='); }).to.throw();
+                expect(() => { parseLexeme('{= '); }).to.throw();
+                expect(() => { parseLexeme('{=}'); }).to.throw();
+                expect(() => { parseLexeme('{= }'); }).to.throw();
+                expect(() => { parseLexeme('{ =}'); }).to.throw();
+                expect(() => { parseLexeme('{ = }'); }).to.throw();
+                expect(() => { parseLexeme('{a=b}'); }).to.throw();
+            });
+
+            it('parses inline variables', () => {
+                expectVariables(parseLexeme('{var= {cat}}'), {var: '{cat}'});
+                expectVariables(parseLexeme('{var= {cat.a}}'), {var: '{cat.a}'});
+                expectVariables(parseLexeme('{var= {cat}{dog}}'), {var: '{cat}{dog}'});
+                expectVariables(parseLexeme('{var= {cat} dog}'), {var: '{cat} dog'});
+                expectVariables(parseLexeme('{var= cat=dog}'), {var: 'cat=dog'});
+            });
+
+            it('strips inline variables from lexeme format string', () => {
+                let lexeme = parseLexeme('{var= {cat}}');
+                expect(lexeme.formatString).to.equal('');
+
+                lexeme = parseLexeme('{var= {cat}} {cat}');
+                expect(lexeme.formatString).to.equal(' {0}');
             });
         });
     });

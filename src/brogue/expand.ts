@@ -1,5 +1,5 @@
 import { getBuiltInModifier } from "./modifiers";
-import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule } from "./grammar";
+import { Expansion, ExpansionModifierCall, Grammar, Lexeme, MarkovSymbol, Rule, Variable } from "./grammar";
 import { parseLexeme } from "./parse";
 
 const MaxRecursionDepth: number = 20;
@@ -7,7 +7,7 @@ const MaxRecursionDepth: number = 20;
 class ExpansionContext {
     recursionDepth: number = 0;
     grammar: Grammar;
-    variables: Map<string, string> = new Map<string, string>();
+    variableStack: (Map<string, string> | undefined)[] = [];
 
     constructor(grammar: Grammar) {
         this.grammar = grammar;
@@ -72,14 +72,25 @@ function generateMarkovString(markovSymbol: MarkovSymbol, context: ExpansionCont
     return '';
 }
 
+function findVariableExpansion(name: string, context: ExpansionContext): string | undefined {
+    for (let i = context.variableStack.length - 1; i >= 0; --i) {
+        const value = context.variableStack[i]!.get(name);
+        if (value !== undefined) {
+            return value;
+        }
+    }
+    return undefined;
+}
+
 function evaluateExpansion(expansion: Expansion, context: ExpansionContext): string {
     const grammar = context.grammar;
     const expansionName = expansion.name;
 
-    // 1. Run expansion
+    // Run expansion
     let expandedString: string = '';
-    if (context.variables.has(expansionName)) {
-        expandedString = context.variables.get(expansionName)!;
+    const expandedVariable = findVariableExpansion(expansionName, context);
+    if (expandedVariable !== undefined) {
+        expandedString = expandedVariable;
     } else if (grammar.markovSymbols.has(expansionName)) {
         const markovSymbol = grammar.markovSymbols.get(expansionName)!;
         expandedString = generateMarkovString(markovSymbol, context);
@@ -95,7 +106,7 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext): str
         throw new Error(`Expansion of ${expansionName} failed -- Could not find associated variable or rule or markov symbol with same name.`);
     }
 
-    // 2. Process modifiers
+    // Process modifiers
     for (const call of expansion.modifierCalls) {
         expandedString = callExpansionModifier(call, expandedString, context);
     }
@@ -109,16 +120,33 @@ function formatString(format: string, args: Array<string>): string {
     });
 }
 
-function expandLexeme(lexeme: Lexeme, context: ExpansionContext): string {
-    if (context.recursionDepth > MaxRecursionDepth) {
-        throw new Error(`Failed to expand lexeme ${lexeme.originalString}. Stack overflow.`);
+function expandVariables(variables: (Map<string, Variable> | undefined), context: ExpansionContext): (Map<string, any> | undefined) {
+    if (!variables) {
+        return undefined;
     }
 
-    context.recursionDepth++;
-    const expansions = lexeme.expansions.map((expansion) => evaluateExpansion(expansion, context));
-    context.recursionDepth--;
-    return formatString(lexeme.formatString, expansions);
+    const expandedVariables = new Map<string, any>();
+    variables.forEach((variable) => {
+        expandedVariables.set(variable.name, expandLexeme(variable.lexeme, context));
+    });
+    return expandedVariables;
+}
 
+function expandLexeme(lexeme: Lexeme, context: ExpansionContext): string {
+    try {
+        context.variableStack.push(expandVariables(lexeme.variables, context));
+
+        if (context.recursionDepth > MaxRecursionDepth) {
+            throw new Error(`Failed to expand lexeme ${lexeme.originalString}. Stack overflow.`);
+        }
+
+        context.recursionDepth++;
+        const expansions = lexeme.expansions.map((expansion) => evaluateExpansion(expansion, context));
+        context.recursionDepth--;
+        return formatString(lexeme.formatString, expansions);
+    } finally {
+        context.variableStack.pop();
+    }
 }
 
 let activeExpansionContext: ExpansionContext | undefined;
@@ -132,11 +160,9 @@ function expand(grammar: Grammar, text: string): string {
     try {
         const lexeme = parseLexeme(text);
 
-        // Expand variables
+        // Expand global variables
         if (expansionDepth === 1) {
-            grammar.variables.forEach((variable) => {
-                context.variables.set(variable.name, expandLexeme(variable.lexeme, context));
-            });
+            context.variableStack.push(expandVariables(grammar.variables, context));
         }
 
         // Expand lexeme
