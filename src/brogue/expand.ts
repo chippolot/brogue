@@ -46,9 +46,13 @@ function pickLexeme(rule: Rule, context: ExpansionContext, lexemesToIgnore?: Lex
 }
 
 function callExpansionModifier(call: ExpansionModifierCall, str: string, context: ExpansionContext): string {
-    const func = context.grammar.modifiers.get(call.name) ?? getBuiltInModifier(call.name);
-    if (func) {
-        return func(str, context, ...call.args);
+    if (context.grammar.modifiers.has(call.name)) {
+        const func = context.grammar.modifiers.get(call.name)!;
+        return func(str, ...call.args);
+    }
+    const builtInFunc = getBuiltInModifier(call.name);
+    if (builtInFunc) {
+        return builtInFunc(str, context, ...call.args);
     }
     throw new Error(`Unrecognized function ${call.name}`);
 }

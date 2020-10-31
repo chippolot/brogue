@@ -28,6 +28,9 @@ function _funcQuotes(s: string, _: ExpansionContext): string {
 }
 
 function _funcTimes(s: string, _: ExpansionContext, n: number) {
+    if (n === undefined || Number.isNaN(n) || typeof n !== 'number') {
+        throw new Error('Expected number parameter. Ex: times(3)');
+    }
     return Array(n).fill(s).join(' ');
 }
 

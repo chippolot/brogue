@@ -162,7 +162,6 @@ function parseLexeme(data: string): Lexeme {
                     lexeme.expansions.push(_parseExpansion(lexeme));
                 }
             } else if (c === closingCharacter) {
-                i = j + 1;
                 break;
             } else if (c === '}') {
                 throw _parseError(`Encountered invalid '}' character when outside expansion`);
@@ -173,6 +172,7 @@ function parseLexeme(data: string): Lexeme {
         }
         lexeme.originalString = data.slice(starti, j);
         lexeme.formatString += data.slice(i, j);
+        i = j + 1;
 
         return lexeme;
     }

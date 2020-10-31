@@ -112,9 +112,10 @@ describe('parseLexeme', () => {
                 }
                 expect(lexeme.variables).to.be.lengthOf(Object.keys(variables).length);
                 for (const key of Object.keys(variables)) {
-                    const value = variables[key];
+                    const value: any = variables[key];
                     expect(lexeme.variables).has.key(key);
-                    expect(lexeme.variables.get(key)!.lexeme.originalString).to.equal(value);
+                    expect(lexeme.variables.get(key)!.lexeme.originalString).to.equal(value.originalString);
+                    expect(lexeme.variables.get(key)!.lexeme.formatString).to.equal(value.formatString);
                 }
             }
 
@@ -129,11 +130,11 @@ describe('parseLexeme', () => {
             });
 
             it('parses inline variables', () => {
-                expectVariables(parseLexeme('{var= {cat}}'), {var: '{cat}'});
-                expectVariables(parseLexeme('{var= {cat.a}}'), {var: '{cat.a}'});
-                expectVariables(parseLexeme('{var= {cat}{dog}}'), {var: '{cat}{dog}'});
-                expectVariables(parseLexeme('{var= {cat} dog}'), {var: '{cat} dog'});
-                expectVariables(parseLexeme('{var= cat=dog}'), {var: 'cat=dog'});
+                expectVariables(parseLexeme('{var= {cat}}'), { var: { originalString: '{cat}', formatString: '{0}' } });
+                expectVariables(parseLexeme('{var= {cat.a}}'), { var: { originalString: '{cat.a}', formatString: '{0}' } });
+                expectVariables(parseLexeme('{var= {cat}{dog}}'), { var: { originalString: '{cat}{dog}', formatString: '{0}{1}' } });
+                expectVariables(parseLexeme('{var= {cat} dog}'), { var: { originalString: '{cat} dog', formatString: '{0} dog' } });
+                expectVariables(parseLexeme('{var= cat=dog}'), { var: { originalString: 'cat=dog', formatString: 'cat=dog' } });
             });
 
             it('strips inline variables from lexeme format string', () => {
