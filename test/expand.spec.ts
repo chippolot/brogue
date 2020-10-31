@@ -12,30 +12,27 @@ describe('expand', () => {
         grammarObject = {
             ruleA: ['a', 'b'],
             ruleB: ['c', 'd'],
-            ruleSentence: 'a cat and dog',
         };
     });
 
     it('should expand empty string', () => {
         const grammar = parseGrammarObject(grammarObject);
-        const expanded = expand(grammar, '');
-        expect(expanded).to.equal('');
+
+        expect(expand(grammar, '')).to.equal('');
     });
 
     it('should expand expansion', () => {
         const grammar = parseGrammarObject(grammarObject);
         sinon.stub(grammar.random, 'random').returns(0);
 
-        const expanded = expand(grammar, '{ruleA}');
-        expect(expanded).to.equal('a');
+        expect(expand(grammar, '{ruleA}')).to.equal('a');
     });
 
     it('should expand multiple expansions', () => {
         const grammar = parseGrammarObject(grammarObject);
         sinon.stub(grammar.random, 'random').returns(0);
 
-        const expanded = expand(grammar, '{ruleA} {ruleB}');
-        expect(expanded).to.equal('a c');
+        expect(expand(grammar, '{ruleA} {ruleB}')).to.equal('a c');
     });
 
     describe('modifiers', () => {
@@ -56,39 +53,152 @@ describe('expand', () => {
         });
 
         describe('built-in modifiers', () => {
-            it('invokes capitalize modifier', () => {
-                const grammar = parseGrammarObject(grammarObject);
-                sinon.stub(grammar.random, 'random').returns(0);
+            it('"capitalize" modifier', () => {
+                const grammar = parseGrammarObject({ sentence: 'a cat and dog' });
 
-                expect(expand(grammar, '{ruleSentence.capitalize}')).to.equal('A cat and dog');
+                expect(expand(grammar, '{sentence.capitalize}')).to.equal('A cat and dog');
             });
 
-            it('invokes capitalizeall modifier', () => {
-                const grammar = parseGrammarObject(grammarObject);
-                sinon.stub(grammar.random, 'random').returns(0);
+            it('"capitalizeall" modifier', () => {
+                const grammar = parseGrammarObject({ sentence: 'a cat and dog' });
 
-                expect(expand(grammar, '{ruleSentence.capitalizeall}')).to.equal('A Cat And Dog');
+                expect(expand(grammar, '{sentence.capitalizeall}')).to.equal('A Cat And Dog');
             });
 
-            it('invokes quotes modifier', () => {
-                const grammar = parseGrammarObject(grammarObject);
-                sinon.stub(grammar.random, 'random').returns(0);
+            it('"quotes" modifier', () => {
+                const grammar = parseGrammarObject({ sentence: 'a cat and dog' });
 
-                expect(expand(grammar, '{ruleSentence.quotes}')).to.equal('"a cat and dog"');
+                expect(expand(grammar, '{sentence.quotes}')).to.equal('"a cat and dog"');
             });
 
-            it('invokes times modifier', () => {
-                const grammar = parseGrammarObject(grammarObject);
-                sinon.stub(grammar.random, 'random').returns(0);
+            it('"times" modifier', () => {
+                const grammar = parseGrammarObject({ letter: 'a' });
 
-                expect(expand(grammar, '{ruleA.times(3)}')).to.equal('a a a');
+                expect(expand(grammar, '{letter.times(3)}')).to.equal('a a a');
 
-                expect(() => expand(grammar, '{ruleA.times}')).to.throw();
-                expect(() => expand(grammar, '{ruleA.times("cat")}')).to.throw();
+                expect(() => expand(grammar, '{letter.times}')).to.throw();
+                expect(() => expand(grammar, '{letter.times("cat")}')).to.throw();
             });
 
-            it('invokes OTHER', () => {
-                expect.fail();
+            it('"a" modifier', () => {
+                const grammar = parseGrammarObject({ noun: 'cat' });
+
+                expect(expand(grammar, '{noun.a}')).to.equal('a cat');
+            });
+
+            it('"s" modifier', () => {
+                const grammar = parseGrammarObject({ noun: 'cat' });
+
+                expect(expand(grammar, '{noun.s}')).to.equal('cats');
+            });
+
+            it('"singular" modifier', () => {
+                const grammar = parseGrammarObject({ nounPlural: 'cats' });
+
+                expect(expand(grammar, '{nounPlural.singular}')).to.equal('cat');
+            });
+
+            it('"past" modifier', () => {
+                const grammar = parseGrammarObject({ verb: 'run' });
+
+                expect(expand(grammar, '{verb.past}')).to.equal('ran');
+            });
+
+            it('"present" modifier', () => {
+                const grammar = parseGrammarObject({ verb: 'run' });
+
+                expect(expand(grammar, '{verb.present}')).to.equal('runs');
+            });
+
+            it('"future" modifier', () => {
+                const grammar = parseGrammarObject({ verb: 'run' });
+
+                expect(expand(grammar, '{verb.future}')).to.equal('will run');
+            });
+
+            it('"ing" modifier', () => {
+                const grammar = parseGrammarObject({ verb: 'run' });
+
+                expect(expand(grammar, '{verb.ing}')).to.equal('running');
+            });
+
+            it('"infinitive" modifier', () => {
+                const grammar = parseGrammarObject({ verb: 'runs' });
+
+                expect(expand(grammar, '{verb.infinitive}')).to.equal('run');
+            });
+
+            it('"nounify" modifier', () => {
+                const grammar = parseGrammarObject({
+                    verbA: 'run',
+                    verbB: 'paint',
+                    verbC: 'debate',
+                });
+
+                expect(expand(grammar, '{verbA.nounify}')).to.equal('runner');
+                expect(expand(grammar, '{verbB.nounify}')).to.equal('painter');
+                expect(expand(grammar, '{verbC.nounify}')).to.equal('debater');
+            });
+
+            it('"possessive" modifier', () => {
+                const grammar = parseGrammarObject({ noun: 'cat' });
+
+                expect(expand(grammar, '{noun.possessive}')).to.equal('cat\'s');
+            });
+
+            it('"positive" modifier', () => {
+                const grammar = parseGrammarObject({
+                    verbNegative: 'does not run'
+                });
+
+                expect(expand(grammar, '{verbNegative.positive}')).to.equal('does run');
+            });
+
+            it('"negative" modifier', () => {
+                const grammar = parseGrammarObject({ verb: 'run' });
+
+                expect(expand(grammar, '{verb.negative}')).to.equal('does not run');
+            });
+
+            it('"numberToWords" modifier', () => {
+                const grammar = parseGrammarObject({ number: '3' });
+
+                expect(expand(grammar, '{number.numberToWords}')).to.equal('three');
+            });
+
+            it('"randomNumber" modifier', () => {
+                const grammar = parseGrammarObject({});
+                sinon.stub(grammar.random, 'intBetween').returns(3);
+
+                expect(expand(grammar, '{.randomNumber(1,5)}')).to.equal('3');
+            });
+
+            it('"roll" modifier', () => {
+                const grammar = parseGrammarObject({});
+
+                let randStub = sinon.stub(grammar.random, 'intBetween');
+                randStub.onCall(0).returns(1);
+                randStub.onCall(1).returns(2);
+                expect(expand(grammar, '{.roll("2d4+1")}')).to.equal('4');
+
+                (grammar.random.intBetween as any).restore();
+                randStub = sinon.stub(grammar.random, 'intBetween');
+                randStub.onCall(0).returns(1);
+                randStub.onCall(1).returns(2);
+                expect(expand(grammar, '{.roll("2d4-1")}')).to.equal('2');
+
+            });
+
+            it('"uniques" modifier', () => {
+                const grammar = parseGrammarObject({
+                    choices: [
+                        { a: 9999 },
+                        { b: 0.0001 },
+                        { c: 0.0001 },
+                    ],
+                });
+                sinon.stub(grammar.random, 'random').returns(0);
+                expect(expand(grammar, '{.uniques("choices", 3, ", ")}')).to.equal('a, b, c');
             });
         });
     });
