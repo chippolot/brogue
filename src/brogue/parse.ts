@@ -116,7 +116,12 @@ function parseLexeme(data: string): Lexeme {
     }
 
     function _parseExpansion(lexeme: Lexeme): Expansion {
-        const expansion: Expansion = { name: "", modifierCalls: [] };
+        const expansion: Expansion = { name: "", modifierCalls: [], isDecorator: false };
+
+        if (data.charAt(j + 1) === '{') {
+            expansion.isDecorator = true;
+            i = ++j + 1;
+        }
 
         while (++j < data.length) {
             const c = data[j];
@@ -126,7 +131,14 @@ function parseLexeme(data: string): Lexeme {
                 if (expansion.modifierCalls.length === 0) {
                     expansion.name = data.slice(i, j);
                 }
-                i = j + 1;
+                if (expansion.isDecorator && data.charAt(j + 1) !== '}') {
+                    throw _parseError(`Expected second '}' character when closing non-tracking expansion`);
+                }
+                if (!expansion.isDecorator) {
+                    i = j + 1;
+                } else {
+                    i = ++j + 1;
+                }
                 return expansion;
             } else if (c === '.') {
                 expansion.name = data.slice(i, j);

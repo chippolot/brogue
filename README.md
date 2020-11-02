@@ -362,6 +362,24 @@ _markov: {
 | order | 2 | Determines how many previous words are used to pick the next word in the generated sentence. The larger the value, the more similar generated sentences will be to the input sentences to the point where they will eventually become identical. |
 | uniqueOutput | true | If true, generation will retry until the output string does not appear in the source list. |
 
+### Decorator Expansions
+There's a special syntax to mark expansions as 'decorators', meaning that they don't meaningfully change the string that they're in. This markup is used by certain modifiers, for example the `uniques` modifier, to determine which strings are considered to be equal.
+
+Decorator expansions are identified by double curly braces:
+```
+{{rule_name}}
+```
+
+For example:
+```
+// The uniques modifier will not choose this string twice, even though it contains an expansion.
+// That is because the only expansion is this string is marked as a decorator and thus expanding twice will not yield "unique" strings.
+"I can jump {{number_of_feet}} feet"
+
+// The uniques modifier will choose this string twice, because it is using a standard expansion.
+"I can {action} 10 feet"
+```
+
 ## Special Thanks
 * [zumpiez](https://github.com/zumpiez)
 

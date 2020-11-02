@@ -10,6 +10,7 @@ interface ExpansionModifierCall {
 
 interface Expansion {
     name: string;
+    isDecorator: boolean;
     modifierCalls: ExpansionModifierCall[];
 }
 

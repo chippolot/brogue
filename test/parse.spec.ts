@@ -22,13 +22,27 @@ describe('parseLexeme', () => {
             expect(() => { parseLexeme("{cat.a}}"); }).to.throw();
         });
 
-        it('parses lexeme with expansions', () => {
+        it('parses lexeme with standard expansions', () => {
             const str = '{cat} {dog}';
             const lexeme = parseLexeme(str);
             expect(lexeme.expansions).to.have.lengthOf(2);
 
             const expansionNames = lexeme.expansions.map((x) => x.name);
             expect(expansionNames).to.include.members(['cat', 'dog']);
+            expect(lexeme.expansions.every((l) => !l.isDecorator)).to.be.true;
+
+            expect(lexeme.originalString).to.equal(str);
+            expect(lexeme.formatString).to.equal('{0} {1}');
+        });
+
+        it('parses lexeme with decorator expansions', () => {
+            const str = '{{cat}} {{dog}}';
+            const lexeme = parseLexeme(str);
+            expect(lexeme.expansions).to.have.lengthOf(2);
+
+            const expansionNames = lexeme.expansions.map((x) => x.name);
+            expect(expansionNames).to.include.members(['cat', 'dog']);
+            expect(lexeme.expansions.every((l) => l.isDecorator)).to.be.true;
 
             expect(lexeme.originalString).to.equal(str);
             expect(lexeme.formatString).to.equal('{0} {1}');

@@ -119,7 +119,7 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext, trac
             expandedString = '';
         } else {
             // If lexeme has no more named expansions, mark it as seen to ignore it in future unique expansions
-            if (trackUniqueExpansions && !lexeme.expansions.some((x) => x.name)) {
+            if (trackUniqueExpansions && !lexeme.expansions.some((x) => x.name && !x.isDecorator)) {
                 context.markLexemeAsSeen(lexeme);
             }
             const expandedLexeme = expandLexeme(lexeme, context, trackUniqueExpansions);
@@ -177,7 +177,7 @@ function expandLexeme(lexeme: Lexeme, context: ExpansionContext, trackUniqueExpa
             return undefined;
         }
 
-        if (trackUniqueExpansions && !lexeme.expansions.some((x) => x.name)) {
+        if (trackUniqueExpansions && !lexeme.expansions.some((x) => x.name && !x.isDecorator)) {
             context.markLexemeAsSeen(lexeme);
         }
 

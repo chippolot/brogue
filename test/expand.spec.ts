@@ -196,20 +196,22 @@ describe('expand', () => {
                         { b: 0.0001 },
                         { c: 0.0001 },
                     ],
-                    testRecursive: [
+                    testNonFinalized: [
                         { "{rule}": 9999 },
                         { c: 0.0001 },
                     ],
                     rule: [
                         'a', 'b',
                     ],
+                    testFinalized: [
+                        { "{{rule}}": 9999 },
+                        { c: 0.0001 },
+                    ],
                 });
                 sinon.stub(grammar.random, 'random').returns(0);
                 expect(expand(grammar, '{.uniques("testSimple", 3, ", ")}')).to.equal('a, b, c');
-                console.log('---------------------------');
-                expect(expand(grammar, '{.uniques("testRecursive", 3, ", ")}')).to.equal('a, b, c');
-
-
+                expect(expand(grammar, '{.uniques("testNonFinalized", 3, ", ")}')).to.equal('a, b, c');
+                expect(expand(grammar, '{.uniques("testFinalized", 3, ", ")}')).to.equal('a, c');
             });
 
             it('"choose" modifier', () => {
