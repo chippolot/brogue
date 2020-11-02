@@ -167,24 +167,27 @@ function _funcUniques(_: string, context: ExpansionContext, ruleName: string, nu
     }
 
     const picks: string[] = [];
-    const pickedLexemes = [];
 
-    const maxTries = 9999;
+    context.pushUniqueTracker();
+
+    const maxTries = 10;
     let tries = 0;
     while (picks.length < num && tries++ < maxTries) {
-
-        const lexeme = pickLexeme(rule, context, pickedLexemes);
+        const lexeme = pickLexeme(rule, context);
         if (!lexeme) {
             break;
         }
 
-        const expanded = expandLexeme(lexeme, context);
-        if (picks.includes(expanded)) {
+        const expanded = expandLexeme(lexeme, context, true);
+        if (expanded === undefined) {
             continue;
         }
-        pickedLexemes.push(lexeme);
-        picks.push(expanded);
+        if (!picks.includes(expanded)) {
+            picks.push(expanded);
+        }
     }
+
+    context.popUniqueTracker();
 
     return picks.join(separator);
 }

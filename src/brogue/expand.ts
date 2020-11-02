@@ -8,34 +8,44 @@ class ExpansionContext {
     recursionDepth: number = 0;
     grammar: Grammar;
     variableStack: (Map<string, string> | undefined)[] = [];
+    uniqueTrackers: Set<Lexeme>[] = [];
 
     constructor(grammar: Grammar) {
         this.grammar = grammar;
     }
+
+    pushUniqueTracker(): void {
+        this.uniqueTrackers.push(new Set<Lexeme>());
+    }
+
+    popUniqueTracker(): void {
+        this.uniqueTrackers.pop();
+    }
+
+    markLexemeAsSeen(lexeme: Lexeme): void {
+        this.uniqueTrackers.forEach((seen) => seen.add(lexeme));
+    }
+
+    hasSeenLexeme(lexeme: Lexeme): boolean {
+        return this.uniqueTrackers.some((set) => set.has(lexeme));
+    }
 }
 
-function pickLexeme(rule: Rule, context: ExpansionContext, lexemesToIgnore?: Lexeme[]): Lexeme | undefined {
-    let totalWeight = rule.totalWeight;
-    let validSet = rule.weightedLexemes;
-
-    if (lexemesToIgnore) {
-        validSet = [...validSet];
-        lexemesToIgnore.forEach((lexeme) => {
-            const index = validSet.findIndex((x) => x.lexeme === lexeme);
-            if (index !== -1) {
-                totalWeight -= validSet[index].weight;
-                validSet.splice(index, 1);
-            }
-        });
+function pickLexeme(rule: Rule, context: ExpansionContext): Lexeme | undefined {
+    if (rule.weightedLexemes.length === 0) {
+        return undefined;
     }
-    if (validSet.length === 0) {
+    const totalWeight = rule.weightedLexemes.reduce((accumulator, next) => (context.hasSeenLexeme(next.lexeme) ? accumulator : accumulator + next.weight), 0);
+    if (totalWeight === 0) {
         return undefined;
     }
 
     const weight = context.grammar.random.random() * totalWeight;
 
     let current = 0;
-    for (const elem of validSet) {
+    const unseenLexemes = rule.weightedLexemes.filter((x) => !context.hasSeenLexeme(x.lexeme));
+
+    for (const elem of unseenLexemes) {
         current += elem.weight;
         if (weight < current) {
             return elem.lexeme;
@@ -86,7 +96,7 @@ function findVariableExpansion(name: string, context: ExpansionContext): string 
     return undefined;
 }
 
-function evaluateExpansion(expansion: Expansion, context: ExpansionContext): string {
+function evaluateExpansion(expansion: Expansion, context: ExpansionContext, trackUniqueExpansions: boolean): string | undefined {
     const grammar = context.grammar;
     const expansionName = expansion.name;
 
@@ -100,11 +110,23 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext): str
         expandedString = generateMarkovString(markovSymbol, context);
     } else if (grammar.rules.has(expansionName)) {
         const rule = grammar.rules.get(expansionName)!;
+        if (rule.weightedLexemes.every((x) => context.hasSeenLexeme(x.lexeme))) {
+            return undefined;
+        }
+
         const lexeme = pickLexeme(rule, context);
         if (!lexeme) {
             expandedString = '';
         } else {
-            expandedString = expandLexeme(lexeme, context);
+            // If lexeme has no more named expansions, mark it as seen to ignore it in future unique expansions
+            if (trackUniqueExpansions && !lexeme.expansions.some((x) => x.name)) {
+                context.markLexemeAsSeen(lexeme);
+            }
+            const expandedLexeme = expandLexeme(lexeme, context, trackUniqueExpansions);
+            if (expandedLexeme === undefined) {
+                return undefined;
+            }
+            expandedString = expandedLexeme;
         }
     } else if (expansionName) {
         throw new Error(`Expansion of ${expansionName} failed -- Could not find associated variable or rule or markov symbol with same name.`);
@@ -131,12 +153,15 @@ function expandVariables(variables: (Map<string, Variable> | undefined), context
 
     const expandedVariables = new Map<string, any>();
     variables.forEach((variable) => {
-        expandedVariables.set(variable.name, expandLexeme(variable.lexeme, context));
+        const expandedLexeme = expandLexeme(variable.lexeme, context, false);
+        if (expandedLexeme !== undefined) {
+            expandedVariables.set(variable.name, expandedLexeme);
+        }
     });
     return expandedVariables;
 }
 
-function expandLexeme(lexeme: Lexeme, context: ExpansionContext): string {
+function expandLexeme(lexeme: Lexeme, context: ExpansionContext, trackUniqueExpansions: boolean): string | undefined {
     try {
         context.variableStack.push(expandVariables(lexeme.variables, context));
 
@@ -145,9 +170,20 @@ function expandLexeme(lexeme: Lexeme, context: ExpansionContext): string {
         }
 
         context.recursionDepth++;
-        const expansions = lexeme.expansions.map((expansion) => evaluateExpansion(expansion, context));
+
+        const expansions = lexeme.expansions.map((expansion) => evaluateExpansion(expansion, context, trackUniqueExpansions));
+        if (expansions.some((x) => x === undefined)) {
+            context.markLexemeAsSeen(lexeme);
+            return undefined;
+        }
+
+        if (trackUniqueExpansions && !lexeme.expansions.some((x) => x.name)) {
+            context.markLexemeAsSeen(lexeme);
+        }
+
         context.recursionDepth--;
-        return formatString(lexeme.formatString, expansions);
+
+        return formatString(lexeme.formatString, expansions.map((x) => x!));
     } finally {
         context.variableStack.pop();
     }
@@ -170,7 +206,7 @@ function expand(grammar: Grammar, text: string): string {
         }
 
         // Expand lexeme
-        return expandLexeme(lexeme, context);
+        return expandLexeme(lexeme, context, false) ?? '';
     } finally {
         if (--expansionDepth === 0) {
             activeExpansionContext = undefined;

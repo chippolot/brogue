@@ -191,18 +191,29 @@ describe('expand', () => {
 
             it('"uniques" modifier', () => {
                 const grammar = parseGrammarObject({
-                    choices: [
+                    testSimple: [
                         { a: 9999 },
                         { b: 0.0001 },
                         { c: 0.0001 },
                     ],
+                    testRecursive: [
+                        { "{rule}": 9999 },
+                        { c: 0.0001 },
+                    ],
+                    rule: [
+                        'a', 'b',
+                    ],
                 });
                 sinon.stub(grammar.random, 'random').returns(0);
-                expect(expand(grammar, '{.uniques("choices", 3, ", ")}')).to.equal('a, b, c');
+                expect(expand(grammar, '{.uniques("testSimple", 3, ", ")}')).to.equal('a, b, c');
+                console.log('---------------------------');
+                expect(expand(grammar, '{.uniques("testRecursive", 3, ", ")}')).to.equal('a, b, c');
+
+
             });
 
             it('"choose" modifier', () => {
-                const grammar = parseGrammarObject({rule: 'minnow'});
+                const grammar = parseGrammarObject({ rule: 'minnow' });
                 sinon.stub(grammar.random, 'range').returns(0);
 
                 expect(expand(grammar, '{.choose("cat", "dog", "bird")}')).to.equal('cat');
