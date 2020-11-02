@@ -3,7 +3,7 @@ import nlp from 'compromise';
 import Articles from 'articles';
 import numWords from 'num-words';
 
-import { expandLexeme, ExpansionContext, pickLexeme } from './expand';
+import { expand, expandLexeme, ExpansionContext, pickLexeme } from './expand';
 
 function _isVowel(s: string): boolean {
     return s === 'a' || s === 'e' || s === 'i' || s === 'o' || s === 'u' || s === 'y' || s === 'A' || s === 'E' || s === 'I' || s === 'O' || s === 'U' || s === 'Y';
@@ -198,7 +198,8 @@ function _funcNumberToWords(s: string, _: ExpansionContext): string {
 }
 
 function _funcChoose(_: string, context: ExpansionContext, ...args: any[]) {
-    return args[context.grammar.random.range(args.length)];
+    const string = (args[context.grammar.random.range(args.length)] as any).toString();
+    return expand(context.grammar, string);
 }
 
 const builtInModifiers: Map<string, Function> = new Map<string, Function>(Object.entries({

@@ -202,9 +202,12 @@ describe('expand', () => {
             });
 
             it('"choose" modifier', () => {
-                const grammar = parseGrammarObject({});
-                sinon.stub(grammar.random, 'range').returns(1);
-                expect(expand(grammar, '{.choose("cat", "dog", "bird")}')).to.equal('dog');
+                const grammar = parseGrammarObject({rule: 'minnow'});
+                sinon.stub(grammar.random, 'range').returns(0);
+
+                expect(expand(grammar, '{.choose("cat", "dog", "bird")}')).to.equal('cat');
+                expect(expand(grammar, '{.choose(1, 2, 3)}')).to.equal('1');
+                expect(expand(grammar, '{.choose("{rule}")}')).to.equal('minnow');
             });
         });
     });
