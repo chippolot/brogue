@@ -20,6 +20,7 @@ npm install --save brogue
     * [Custom Modifiers](#custom-modifiers)
     * [Rule Weighting](#rule-weighting)
     * [Markov Chains](#markov-chains)
+- [Special Thanks](#special-thanks)
 
 ## Usage
 1. Load or Parse a grammar:  `brogue.loadGrammar(filePath)` or `brogue.parseGrammar(string)')`
@@ -360,5 +361,8 @@ _markov: {
 | maxTries | 100 | Number of times generation will be attempted before failing and returning an empty string. |
 | order | 2 | Determines how many previous words are used to pick the next word in the generated sentence. The larger the value, the more similar generated sentences will be to the input sentences to the point where they will eventually become identical. |
 | uniqueOutput | true | If true, generation will retry until the output string does not appear in the source list. |
+
+## Special Thanks
+* [zumpiez](https://github.com/zumpiez)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
