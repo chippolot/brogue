@@ -16,10 +16,14 @@ describe('parseLexeme', () => {
     describe('parsing expansions', () => {
 
         it('fails to parse invalid expansions', () => {
+            expect(() => { parseLexeme("{"); }).to.throw();
+            expect(() => { parseLexeme("}"); }).to.throw();
             expect(() => { parseLexeme("}cat.a"); }).to.throw();
             expect(() => { parseLexeme("{cat.a"); }).to.throw();
             expect(() => { parseLexeme("{cat.a{}"); }).to.throw();
             expect(() => { parseLexeme("{cat.a}}"); }).to.throw();
+            expect(() => { parseLexeme("{{cat.a}"); }).to.throw();
+            expect(() => { parseLexeme("{{cat.a} {dog}}"); }).to.throw();
         });
 
         it('parses lexeme with standard expansions', () => {
