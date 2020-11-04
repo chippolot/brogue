@@ -35,7 +35,8 @@ function pickLexeme(rule: Rule, context: ExpansionContext): Lexeme | undefined {
     if (rule.weightedLexemes.length === 0) {
         return undefined;
     }
-    const totalWeight = rule.weightedLexemes.reduce((accumulator, next) => (context.hasSeenLexeme(next.lexeme) ? accumulator : accumulator + next.weight), 0);
+    const unseenLexemes = rule.weightedLexemes.filter((x) => !context.hasSeenLexeme(x.lexeme));
+    const totalWeight = unseenLexemes.reduce((acc, next) => acc + next.weight, 0);
     if (totalWeight === 0) {
         return undefined;
     }
@@ -43,7 +44,6 @@ function pickLexeme(rule: Rule, context: ExpansionContext): Lexeme | undefined {
     const weight = context.grammar.random.random() * totalWeight;
 
     let current = 0;
-    const unseenLexemes = rule.weightedLexemes.filter((x) => !context.hasSeenLexeme(x.lexeme));
 
     for (const elem of unseenLexemes) {
         current += elem.weight;
@@ -118,10 +118,6 @@ function evaluateExpansion(expansion: Expansion, context: ExpansionContext, trac
         if (!lexeme) {
             expandedString = '';
         } else {
-            // If lexeme has no more named expansions, mark it as seen to ignore it in future unique expansions
-            if (trackUniqueExpansions && !lexeme.expansions.some((x) => x.name && !x.isDecorator)) {
-                context.markLexemeAsSeen(lexeme);
-            }
             const expandedLexeme = expandLexeme(lexeme, context, trackUniqueExpansions);
             if (expandedLexeme === undefined) {
                 return undefined;
@@ -172,7 +168,7 @@ function expandLexeme(lexeme: Lexeme, context: ExpansionContext, trackUniqueExpa
         context.recursionDepth++;
 
         const expansions = lexeme.expansions.map((expansion) => evaluateExpansion(expansion, context, trackUniqueExpansions));
-        if (expansions.some((x) => x === undefined)) {
+        if (trackUniqueExpansions && expansions.some((x) => x === undefined)) {
             context.markLexemeAsSeen(lexeme);
             return undefined;
         }

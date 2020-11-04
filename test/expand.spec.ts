@@ -196,22 +196,30 @@ describe('expand', () => {
                         { b: 0.0001 },
                         { c: 0.0001 },
                     ],
-                    testNonFinalized: [
-                        { "{rule}": 9999 },
-                        { c: 0.0001 },
+                    testNonFinalized1: [
+                        { "{rule1}": 9999 },
+                        { z: 0.0001 },
                     ],
-                    rule: [
-                        'a', 'b',
+                    testNonFinalized2: [
+                        { "{rule1} {rule2}": 9999 },
+                        { z: 0.0001 },
                     ],
                     testFinalized: [
-                        { "{{rule}}": 9999 },
-                        { c: 0.0001 },
+                        { "{{rule1}}": 9999 },
+                        { z: 0.0001 },
+                    ],
+                    rule1: [
+                        'a', 'b',
+                    ],
+                    rule2: [
+                        'c', 'd',
                     ],
                 });
                 sinon.stub(grammar.random, 'random').returns(0);
                 expect(expand(grammar, '{.uniques("testSimple", 3, ", ")}')).to.equal('a, b, c');
-                expect(expand(grammar, '{.uniques("testNonFinalized", 3, ", ")}')).to.equal('a, b, c');
-                expect(expand(grammar, '{.uniques("testFinalized", 3, ", ")}')).to.equal('a, c');
+                expect(expand(grammar, '{.uniques("testNonFinalized1", 3, ", ")}')).to.equal('a, b, z');
+                expect(expand(grammar, '{.uniques("testNonFinalized2", 3, ", ")}')).to.equal('a c, b d, z');
+                expect(expand(grammar, '{.uniques("testFinalized", 3, ", ")}')).to.equal('a, z');
             });
 
             it('"choose" modifier', () => {
